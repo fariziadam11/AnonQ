@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages } from '../context/MessagesContext';
-import { MessageCircle, Search, ArrowUpDown } from 'lucide-react';
+import { MessageCircle, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface User {
@@ -21,6 +21,8 @@ const UserListPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 9; // 3x3 grid
   const { profile: currentProfile } = useProfile();
   const { sendMessage } = useMessages();
 
@@ -74,6 +76,18 @@ const UserListPage: React.FC = () => {
 
     return result;
   }, [users, searchQuery, sortBy]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAndSortedUsers.length / usersPerPage);
+  const paginatedUsers = filteredAndSortedUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -152,7 +166,7 @@ const UserListPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAndSortedUsers.map((user) => (
+        {paginatedUsers.map((user) => (
           <div
             key={user.id}
             className={`p-6 rounded-neo border-2 border-neoDark dark:border-white shadow-neo cursor-pointer transition-all duration-200 ${
@@ -181,6 +195,49 @@ const UserListPage: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white">
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-sm text-neoDark/70 dark:text-white/70">
+            Showing {paginatedUsers.length} of {filteredAndSortedUsers.length} users
+          </p>
+          <p className="text-sm text-neoDark/70 dark:text-white/70">
+            Page {currentPage} of {totalPages}
+          </p>
+        </div>
+        
+        <div className="flex justify-center items-center gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white font-bold transition-all duration-200 ${
+                currentPage === page
+                  ? 'bg-neoAccent2 text-white dark:bg-neoAccent3 dark:text-neoDark'
+                  : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {selectedUser && (

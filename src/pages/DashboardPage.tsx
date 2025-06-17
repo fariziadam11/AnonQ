@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram } from 'lucide-react';
+import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages, Message } from '../context/MessagesContext';
 import { MessageCard } from '../components/MessageCard';
@@ -11,6 +11,8 @@ export const DashboardPage: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [sort, setSort] = useState<'newest' | 'oldest' | 'unread' | 'read'>('newest');
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const messagesPerPage = 10;
 
   const filteredMessages = messages.filter((message: Message) =>
     filter === 'all' ? true : !message.is_read
@@ -36,6 +38,17 @@ export const DashboardPage: React.FC = () => {
     }
     return 0;
   });
+
+  const totalPages = Math.ceil(sortedMessages.length / messagesPerPage);
+  const paginatedMessages = sortedMessages.slice(
+    (currentPage - 1) * messagesPerPage,
+    currentPage * messagesPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const copyLink = () => {
     if (profile) {
@@ -217,15 +230,60 @@ export const DashboardPage: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {sortedMessages.map((message) => (
-                <MessageCard
-                  key={message.id}
-                  message={message}
-                  onMarkAsRead={markAsRead}
-                />
-              ))}
-            </div>
+            <>
+              <div className="space-y-4">
+                {paginatedMessages.map((message) => (
+                  <MessageCard
+                    key={message.id}
+                    message={message}
+                    onMarkAsRead={markAsRead}
+                  />
+                ))}
+              </div>
+              
+              <div className="mt-6 p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-sm text-neoDark/70 dark:text-white/70">
+                    Showing {paginatedMessages.length} of {sortedMessages.length} messages
+                  </p>
+                  <p className="text-sm text-neoDark/70 dark:text-white/70">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                </div>
+                
+                <div className="flex justify-center items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white font-bold transition-all duration-200 ${
+                        currentPage === page
+                          ? 'bg-neoAccent2 text-white dark:bg-neoAccent3 dark:text-neoDark'
+                          : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
