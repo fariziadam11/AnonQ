@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Check, CheckCheck, MessageCircle } from 'lucide-react';
+import { Clock, Check, CheckCheck } from 'lucide-react';
 import { Database } from '../lib/supabase';
 
 type Message = Database['public']['Tables']['messages']['Row'];
@@ -11,14 +11,11 @@ export interface MessageCardProps {
     content: string;
     is_read: boolean;
     created_at: string;
-    reply_content?: string;
-    reply_to?: string;
   };
   onMarkAsRead: (messageId: string) => Promise<void>;
-  onReply: () => void;
 }
 
-export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead, onReply }) => {
+export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead }) => {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -66,15 +63,6 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead,
               </div>
             )}
           </div>
-          {message.reply_content && (
-            <div className="mt-4 p-3 bg-neoAccent2/10 dark:bg-neoAccent2/20 rounded-neo border border-neoAccent2/20 dark:border-neoAccent2/30">
-              <div className="flex items-center gap-2 text-sm text-neoAccent2 mb-1">
-                <MessageCircle className="h-4 w-4" />
-                <span>Your reply</span>
-              </div>
-              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.reply_content}</p>
-            </div>
-          )}
         </div>
         <div className="flex flex-col gap-2">
           {!message.is_read && (
@@ -86,13 +74,6 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead,
               <CheckCheck className="h-5 w-5" />
             </button>
           )}
-          <button
-            onClick={onReply}
-            className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200"
-            title="Reply to message"
-          >
-            <MessageCircle className="h-5 w-5" />
-          </button>
         </div>
       </div>
     </div>

@@ -9,8 +9,6 @@ export interface Message {
   content: string;
   is_read: boolean;
   created_at: string;
-  reply_to?: string;
-  reply_content?: string;
 }
 
 interface MessagesContextType {
@@ -18,7 +16,6 @@ interface MessagesContextType {
   loading: boolean;
   unreadCount: number;
   markAsRead: (messageId: string) => Promise<void>;
-  sendReply: (messageId: string, replyContent: string) => Promise<boolean>;
   sendMessage: (profileId: string, content: string) => Promise<any>;
 }
 
@@ -188,38 +185,6 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const sendReply = async (messageId: string, replyContent: string) => {
-    try {
-      if (!profile) throw new Error('No profile found');
-
-      const { error } = await supabase
-        .from('messages')
-        .update({
-          reply_content: replyContent,
-          reply_to: messageId,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', messageId)
-        .eq('profile_id', profile.id);
-
-      if (error) throw error;
-
-      // Update local state
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId
-            ? { ...msg, reply_content: replyContent, reply_to: messageId }
-            : msg
-        )
-      );
-
-      return true;
-    } catch (error) {
-      console.error('Error sending reply:', error);
-      throw error;
-    }
-  };
-
   const sendMessage = async (profileId: string, content: string) => {
     try {
       const { data, error } = await supabase
@@ -244,7 +209,6 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     loading,
     unreadCount,
     markAsRead,
-    sendReply,
     sendMessage,
   };
 
