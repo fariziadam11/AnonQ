@@ -37,42 +37,42 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`bg-white/80 backdrop-blur-md rounded-xl p-6 border transition-all duration-200 cursor-pointer hover:shadow-lg hover:scale-[1.02] ${
+      className={`bg-white rounded-neo p-6 border-2 border-neoDark shadow-neo cursor-pointer hover:scale-[1.02] transition-all duration-200 ${
         message.is_read
-          ? 'border-gray-200/50 hover:border-gray-300/50'
-          : 'border-purple-200/50 hover:border-purple-300/50 shadow-md'
+          ? 'opacity-80'
+          : 'bg-neoAccent/10 border-neoAccent2 shadow-neo-lg'
       }`}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center space-x-2">
           <div
-            className={`w-3 h-3 rounded-full ${
-              message.is_read ? 'bg-gray-300' : 'bg-purple-500'
+            className={`w-3 h-3 rounded-full border-2 border-neoDark ${
+              message.is_read ? 'bg-gray-300' : 'bg-neoAccent2'
             }`}
           />
-          <span className="text-sm text-gray-500">Anonymous</span>
+          <span className="text-sm text-neoDark font-bold">Anonymous</span>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
+        <div className="flex items-center space-x-2 text-sm text-neoDark font-bold">
           <Clock className="h-4 w-4" />
           <span>{formatTime(message.created_at)}</span>
           {message.is_read ? (
-            <CheckCheck className="h-4 w-4 text-green-500" />
+            <CheckCheck className="h-4 w-4 text-neoAccent3" />
           ) : (
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4 text-neoAccent2" />
           )}
         </div>
       </div>
 
       <div
-        className={`text-gray-800 leading-relaxed ${
-          !message.is_read ? 'font-medium' : ''
+        className={`text-neoDark leading-relaxed text-lg ${
+          !message.is_read ? 'font-extrabold' : 'font-medium'
         }`}
       >
         {message.content}
       </div>
 
       {!message.is_read && (
-        <div className="mt-4 text-sm text-purple-600 font-medium">
+        <div className="mt-4 text-sm text-neoAccent2 font-bold">
           Click to mark as read
         </div>
       )}
