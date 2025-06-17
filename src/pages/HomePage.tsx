@@ -8,56 +8,56 @@ export const HomePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-yellow-300 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-8 border-black dark:border-white border-t-red-500"></div>
       </div>
     );
   }
 
   if (user) {
     return (
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-yellow-300 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-12">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent mb-6">
+            <h1 className="text-5xl font-black mb-6 transform -rotate-1 p-4 border-8 shadow-[8px_8px_0px_0px_#000] text-black dark:text-white bg-red-500 dark:bg-red-600 border-black dark:border-white">
               Welcome to AnonQ
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl max-w-2xl mx-auto font-bold p-4 border-4 transform rotate-1 shadow-[4px_4px_0px_0px_#000] text-black dark:text-white bg-white dark:bg-gray-800 border-black dark:border-white">
               You're all set! Check your dashboard to see messages or share your
               personal link to start receiving anonymous messages.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300">
-              <MessageCircle className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                View Messages
+            <div className="border-8 p-8 shadow-[8px_8px_0px_0px_#000] transform hover:-rotate-2 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_#000] bg-blue-400 dark:bg-blue-600 border-black dark:border-white">
+              <MessageCircle className="h-12 w-12 mx-auto mb-4 stroke-[3px] text-black dark:text-white" />
+              <h3 className="text-xl font-black mb-2 text-black dark:text-white">
+                VIEW MESSAGES
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 font-bold text-black dark:text-white">
                 Check all the anonymous messages you've received from others.
               </p>
               <button
                 onClick={() => window.location.href = '/dashboard'}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200"
+                className="px-6 py-2 border-4 font-black uppercase shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 bg-red-500 dark:bg-red-600 text-black dark:text-white border-black dark:border-white"
               >
-                Go to Dashboard
+                GO TO DASHBOARD
               </button>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300">
-              <LinkIcon className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                Share Your Link
+            <div className="border-8 p-8 shadow-[8px_8px_0px_0px_#000] transform hover:rotate-2 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_#000] bg-green-400 dark:bg-green-600 border-black dark:border-white">
+              <LinkIcon className="h-12 w-12 mx-auto mb-4 stroke-[3px] text-black dark:text-white" />
+              <h3 className="text-xl font-black mb-2 text-black dark:text-white">
+                SHARE YOUR LINK
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 font-bold text-black dark:text-white">
                 Share your personal page to start receiving anonymous messages.
               </p>
               <button
                 onClick={() => window.location.href = '/dashboard'}
-                className="bg-gradient-to-r from-indigo-600 to-emerald-600 text-white px-6 py-2 rounded-lg hover:from-indigo-700 hover:to-emerald-700 transition-all duration-200"
+                className="px-6 py-2 border-4 font-black uppercase shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 bg-yellow-500 dark:bg-yellow-600 text-black dark:text-white border-black dark:border-white"
               >
-                Get Your Link
+                GET YOUR LINK
               </button>
             </div>
           </div>
@@ -67,96 +67,94 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-yellow-300 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto">
-        {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent mb-6">
-            Anonymous Q&A Platform
+          <h1 className="text-6xl font-black mb-6 transform -rotate-2 p-8 border-8 shadow-[12px_12px_0px_0px_#000] text-black dark:text-white bg-red-500 dark:bg-red-600 border-black dark:border-white">
+            ANONYMOUS Q&A PLATFORM
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl max-w-3xl mx-auto mb-8 font-bold p-6 border-4 transform rotate-1 shadow-[6px_6px_0px_0px_#000] text-black dark:text-white bg-white dark:bg-gray-800 border-black dark:border-white">
             Create your anonymous link and let others send you honest, anonymous
             messages. Perfect for receiving feedback, questions, or just connecting
             with others in a safe space.
           </p>
           <div className="flex justify-center">
-            <div className="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full px-6 py-3">
-              <span className="text-purple-800 font-medium">
-                🚀 Join thousands sharing anonymously
+            <div className="border-4 px-6 py-3 shadow-[4px_4px_0px_0px_#000] transform -rotate-1 bg-blue-400 dark:bg-blue-600 border-black dark:border-white">
+              <span className="font-black uppercase text-black dark:text-white">
+                🚀 JOIN THOUSANDS SHARING ANONYMOUSLY
               </span>
             </div>
           </div>
         </div>
 
-        {/* Features */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <MessageCircle className="h-12 w-12 text-purple-600 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Anonymous Messages
+          <div className="border-8 p-8 shadow-[8px_8px_0px_0px_#000] transform hover:-rotate-3 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_#000] bg-pink-400 dark:bg-pink-600 border-black dark:border-white">
+            <MessageCircle className="h-12 w-12 mb-4 stroke-[3px] text-black dark:text-white" />
+            <h3 className="text-xl font-black mb-2 uppercase text-black dark:text-white">
+              ANONYMOUS MESSAGES
             </h3>
-            <p className="text-gray-600">
+            <p className="font-bold text-black dark:text-white">
               Receive honest feedback and questions without revealing the sender's
               identity. Perfect for genuine conversations.
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <Shield className="h-12 w-12 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Complete Privacy
+          <div className="border-8 p-8 shadow-[8px_8px_0px_0px_#000] transform hover:rotate-3 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_#000] bg-cyan-400 dark:bg-cyan-600 border-black dark:border-white">
+            <Shield className="h-12 w-12 mb-4 stroke-[3px] text-black dark:text-white" />
+            <h3 className="text-xl font-black mb-2 uppercase text-black dark:text-white">
+              COMPLETE PRIVACY
             </h3>
-            <p className="text-gray-600">
+            <p className="font-bold text-black dark:text-white">
               Your privacy is our priority. All messages are completely anonymous
               with no way to trace back to the sender.
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <Users className="h-12 w-12 text-emerald-600 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Easy Sharing
+          <div className="border-8 p-8 shadow-[8px_8px_0px_0px_#000] transform hover:-rotate-2 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_#000] bg-orange-400 dark:bg-orange-600 border-black dark:border-white">
+            <Users className="h-12 w-12 mb-4 stroke-[3px] text-black dark:text-white" />
+            <h3 className="text-xl font-black mb-2 uppercase text-black dark:text-white">
+              EASY SHARING
             </h3>
-            <p className="text-gray-600">
+            <p className="font-bold text-black dark:text-white">
               Get your unique link and share it anywhere. Friends, social media,
               or embed it on your website.
             </p>
           </div>
         </div>
 
-        {/* Auth Form */}
         <div className="max-w-md mx-auto">
           <AuthForm />
         </div>
 
-        {/* How it works */}
         <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">How it works</h2>
+          <h2 className="text-3xl font-black mb-8 p-4 border-6 shadow-[6px_6px_0px_0px_#000] transform rotate-1 uppercase text-black dark:text-white bg-green-400 dark:bg-green-600 border-black dark:border-white">
+            HOW IT WORKS
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-purple-600 font-bold text-lg">1</span>
+            <div className="space-y-4 p-6 border-6 shadow-[6px_6px_0px_0px_#000] transform -rotate-2 bg-purple-400 dark:bg-purple-600 border-black dark:border-white">
+              <div className="w-12 h-12 border-4 flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#000] bg-white dark:bg-gray-800 border-black dark:border-white">
+                <span className="font-black text-lg text-black dark:text-white">1</span>
               </div>
-              <h3 className="font-semibold text-gray-800">Create Account</h3>
-              <p className="text-gray-600">
+              <h3 className="font-black uppercase text-black dark:text-white">CREATE ACCOUNT</h3>
+              <p className="font-bold text-black dark:text-white">
                 Sign up with your email and choose a unique username
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-indigo-600 font-bold text-lg">2</span>
+            <div className="space-y-4 p-6 border-6 shadow-[6px_6px_0px_0px_#000] transform rotate-1 bg-lime-400 dark:bg-lime-600 border-black dark:border-white">
+              <div className="w-12 h-12 border-4 flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#000] bg-white dark:bg-gray-800 border-black dark:border-white">
+                <span className="font-black text-lg text-black dark:text-white">2</span>
               </div>
-              <h3 className="font-semibold text-gray-800">Share Your Link</h3>
-              <p className="text-gray-600">
+              <h3 className="font-black uppercase text-black dark:text-white">SHARE YOUR LINK</h3>
+              <p className="font-bold text-black dark:text-white">
                 Share your personal anonymous message link with others
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-emerald-600 font-bold text-lg">3</span>
+            <div className="space-y-4 p-6 border-6 shadow-[6px_6px_0px_0px_#000] transform -rotate-1 bg-rose-400 dark:bg-rose-600 border-black dark:border-white">
+              <div className="w-12 h-12 border-4 flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#000] bg-white dark:bg-gray-800 border-black dark:border-white">
+                <span className="font-black text-lg text-black dark:text-white">3</span>
               </div>
-              <h3 className="font-semibold text-gray-800">Receive Messages</h3>
-              <p className="text-gray-600">
+              <h3 className="font-black uppercase text-black dark:text-white">RECEIVE MESSAGES</h3>
+              <p className="font-bold text-black dark:text-white">
                 Get anonymous messages and respond if you want to
               </p>
             </div>

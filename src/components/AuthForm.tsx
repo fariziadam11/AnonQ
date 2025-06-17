@@ -59,12 +59,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white rounded-neo shadow-neo-lg border-4 border-neoDark p-8">
+      <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-extrabold text-neoDark drop-shadow-sm">
+          <h2 className="text-3xl font-extrabold text-neoDark dark:text-white drop-shadow-sm">
             {isLogin ? 'Welcome Back' : 'Create Account'}
           </h2>
-          <p className="text-neoDark/70 mt-2">
+          <p className="text-neoDark/70 dark:text-white/70 mt-2">
             {isLogin
               ? 'Sign in to access your anonymous messages'
               : 'Join AnonQ to start receiving anonymous messages'}
@@ -74,7 +74,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div>
-              <label className="block text-sm font-bold text-neoDark mb-2">
+              <label className="block text-sm font-bold text-neoDark dark:text-white mb-2">
                 Username
               </label>
               <div className="relative">
@@ -84,7 +84,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border-2 border-neoDark rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg text-neoDark font-bold shadow-neo"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-neoDark dark:border-white rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo"
                   placeholder="Choose a unique username"
                   required={!isLogin}
                 />
@@ -93,7 +93,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-sm font-bold text-neoDark mb-2">
+            <label className="block text-sm font-bold text-neoDark dark:text-white mb-2">
               Email
             </label>
             <div className="relative">
@@ -103,7 +103,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-4 py-3 border-2 border-neoDark rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg text-neoDark font-bold shadow-neo"
+                className="w-full pl-10 pr-4 py-3 border-2 border-neoDark dark:border-white rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo"
                 placeholder="Enter your email"
                 required
               />
@@ -111,7 +111,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-neoDark mb-2">
+            <label className="block text-sm font-bold text-neoDark dark:text-white mb-2">
               Password
             </label>
             <div className="relative">
@@ -121,7 +121,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-12 py-3 border-2 border-neoDark rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg text-neoDark font-bold shadow-neo"
+                className="w-full pl-10 pr-12 py-3 border-2 border-neoDark dark:border-white rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo"
                 placeholder="Enter your password"
                 required
               />
@@ -138,7 +138,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-neoAccent2 text-white py-3 px-4 rounded-neo border-2 border-neoDark shadow-neo font-extrabold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-neoAccent2 text-white py-3 px-4 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-extrabold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
