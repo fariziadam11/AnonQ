@@ -31,7 +31,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (!profile) return;
 
     let mounted = true;
-    let channel: any = null;
+    let pollInterval: NodeJS.Timeout;
 
     const fetchMessages = async () => {
       try {
@@ -59,104 +59,16 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     };
 
-    const setupSubscription = () => {
-      // Remove any existing channel first
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-
-      let retryCount = 0;
-      const maxRetries = 3; // Reduce max retries
-      const baseDelay = 2000; // Start with 2 seconds
-      let isConnecting = false;
-
-      const attemptConnection = () => {
-        if (!mounted || isConnecting) return;
-        isConnecting = true;
-
-        try {
-          channel = supabase
-            .channel('messages', {
-              config: {
-                broadcast: { self: true },
-                presence: { key: profile?.id },
-              },
-            })
-            .on(
-              'postgres_changes',
-              {
-                event: '*',
-                schema: 'public',
-                table: 'messages',
-                filter: `profile_id=eq.${profile.id}`,
-              },
-              (payload) => {
-                if (!mounted) return;
-
-                if (payload.eventType === 'INSERT') {
-                  setMessages((prev) => [payload.new as Message, ...prev]);
-                  setUnreadCount((prev) => prev + 1);
-                } else if (payload.eventType === 'UPDATE') {
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === payload.new.id ? (payload.new as Message) : msg
-                    )
-                  );
-                  if (!(payload.new as Message).is_read) {
-                    setUnreadCount((prev) => prev + 1);
-                  }
-                }
-              }
-            )
-            .subscribe((status, err) => {
-              isConnecting = false;
-              
-              if (status === 'SUBSCRIBED') {
-                console.log('Successfully subscribed to messages channel');
-                retryCount = 0; // Reset retry count on successful connection
-              } else if (status === 'CHANNEL_ERROR') {
-                console.error('Channel error:', err);
-                handleReconnection();
-              } else if (status === 'CLOSED') {
-                console.log('Channel closed, attempting to reconnect...');
-                handleReconnection();
-              }
-            });
-        } catch (error) {
-          console.error('Error setting up subscription:', error);
-          isConnecting = false;
-          handleReconnection();
-        }
-      };
-
-      const handleReconnection = () => {
-        if (!mounted || retryCount >= maxRetries) {
-          console.log('Max retries reached, stopping reconnection attempts');
-          return;
-        }
-
-        const delay = Math.min(baseDelay * Math.pow(2, retryCount), 10000); // Max 10 seconds
-        retryCount++;
-
-        console.log(`Attempting to reconnect in ${delay}ms (attempt ${retryCount}/${maxRetries})`);
-        
-        setTimeout(() => {
-          if (mounted) {
-            attemptConnection();
-          }
-        }, delay);
-      };
-
-      attemptConnection();
-    };
-
+    // Initial fetch
     fetchMessages();
-    setupSubscription();
+
+    // Set up polling every 30 seconds
+    pollInterval = setInterval(fetchMessages, 30000);
 
     return () => {
       mounted = false;
-      if (channel) {
-        supabase.removeChannel(channel);
+      if (pollInterval) {
+        clearInterval(pollInterval);
       }
     };
   }, [profile]);
