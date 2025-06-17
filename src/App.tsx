@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
 import { MessagesProvider } from './context/MessagesContext';
@@ -8,7 +10,19 @@ import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
+import UserListPage from './pages/UserListPage';
 import { useAuth } from './context/AuthContext';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -39,6 +53,7 @@ const AppContent: React.FC = () => {
             }
           />
           <Route path="/u/:username" element={<ProfilePage />} />
+          <Route path="/users" element={<UserListPage />} />
         </Routes>
       </Layout>
       <Toaster
@@ -57,16 +72,19 @@ const AppContent: React.FC = () => {
   );
 };
 
-function App() {
+const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <ProfileProvider>
-        <MessagesProvider>
-          <AppContent />
-        </MessagesProvider>
-      </ProfileProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ProfileProvider>
+          <MessagesProvider>
+            <AppContent />
+          </MessagesProvider>
+        </ProfileProvider>
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
-}
+};
 
 export default App;

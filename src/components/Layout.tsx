@@ -89,6 +89,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     )}
                   </Link>
                   <Link
+                    to="/users"
+                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/users'
+                        ? 'bg-neoAccent3 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-neoAccent3/40'
+                    }`}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>User List</span>
+                  </Link>
+                  <Link
                     to={`/u/${profile.username}`}
                     className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
                       location.pathname === `/u/${profile.username}`
@@ -146,6 +157,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                         {unreadCount}
                       </span>
                     )}
+                  </Link>
+                  <Link
+                    to="/users"
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/users'
+                        ? 'bg-neoAccent3 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-neoAccent3/40'
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>User List</span>
                   </Link>
                   <Link
                     to={`/u/${profile.username}`}

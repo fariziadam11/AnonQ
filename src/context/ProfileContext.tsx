@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, Database } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 
@@ -14,22 +15,13 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-      setLoading(false);
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
-    if (!user) return;
-
-    try {
+  // Fetch profile query
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -37,14 +29,12 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         .single();
 
       if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data;
+    },
+    enabled: !!user,
+  });
 
+  // Get profile by username query
   const getProfileByUsername = async (username: string) => {
     const { data, error } = await supabase
       .from('profiles')
@@ -56,9 +46,34 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return data;
   };
 
+  // Set up real-time subscription for profile updates
+  React.useEffect(() => {
+    if (!user) return;
+
+    const subscription = supabase
+      .channel('profile')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, queryClient]);
+
   const value = {
     profile,
-    loading,
+    loading: isLoading,
     getProfileByUsername,
   };
 

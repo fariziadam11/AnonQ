@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useProfile } from './ProfileContext';
+import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
 export interface Message {
@@ -24,47 +26,128 @@ const MessagesContext = createContext<MessagesContextType | undefined>(undefined
 
 export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { profile } = useProfile();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!profile) return;
+  // Fetch messages query
+  const { data: messages = [], isLoading } = useQuery({
+    queryKey: ['messages', profile?.id],
+    queryFn: async () => {
+      if (!profile) return [];
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('profile_id', profile.id)
+        .order('created_at', { ascending: false });
 
-    let mounted = true;
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!profile,
+  });
 
-    const fetchMessages = async () => {
+  // Calculate unread count
+  const unreadCount = messages.filter((msg) => !msg.is_read).length;
+
+  // Mark as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      const { error } = await supabase
+        .from('messages')
+        .update({ is_read: true })
+        .eq('id', messageId)
+        .eq('profile_id', profile?.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', profile?.id] });
+    },
+    onError: (error) => {
+      console.error('Error marking message as read:', error);
+      toast.error('Failed to mark message as read');
+    },
+  });
+
+  // Send message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({ profileId, content }: { profileId: string; content: string }) => {
       try {
+        if (!profile) throw new Error('No profile found');
+        if (!user) throw new Error('No authenticated user found');
+
+        console.log('Sending message with:', {
+          profileId,
+          content,
+          currentUserId: user.id,
+          currentProfileId: profile.id
+        });
+
         const { data, error } = await supabase
           .from('messages')
-          .select('*')
-          .eq('profile_id', profile.id)
-          .order('created_at', { ascending: false });
+          .insert({
+            profile_id: profileId,
+            content,
+            is_read: false,
+            user_id: user.id
+          })
+          .select()
+          .single();
 
-        if (error) throw error;
-
-        if (mounted) {
-          setMessages(data || []);
-          setUnreadCount(data?.filter((msg) => !msg.is_read).length || 0);
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
         }
+
+        return data;
       } catch (error) {
-        console.error('Error fetching messages:', error);
-        if (mounted) {
-          toast.error('Failed to load messages');
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        console.error('Error sending message:', error);
+        throw error;
       }
-    };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', profile?.id] });
+    },
+    onError: (error: any) => {
+      console.error('Error sending message:', error);
+      if (error.message === 'No profile found') {
+        toast.error('Profile tidak ditemukan');
+      } else if (error.message === 'No authenticated user found') {
+        toast.error('Anda harus login untuk mengirim pesan');
+      } else {
+        toast.error('Gagal mengirim pesan. Silakan coba lagi.');
+      }
+    },
+  });
+  
+  // Delete message mutation
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      if (!profile) throw new Error('No profile found');
 
-    // Initial fetch
-    fetchMessages();
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId)
+        .eq('profile_id', profile.id);
 
-    // Set up real-time subscription
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', profile?.id] });
+    },
+    onError: (error) => {
+      console.error('Error deleting message:', error);
+      toast.error('Failed to delete message');
+    },
+  });
+
+  // Set up real-time subscription
+  React.useEffect(() => {
+    if (!profile) return;
+
     const subscription = supabase
-      .channel('messages_changes')
+      .channel('messages')
       .on(
         'postgres_changes',
         {
@@ -73,108 +156,24 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           table: 'messages',
           filter: `profile_id=eq.${profile.id}`,
         },
-        (payload) => {
-          if (mounted) {
-            if (payload.eventType === 'INSERT') {
-              setMessages((prev) => [payload.new as Message, ...prev]);
-              if (!(payload.new as Message).is_read) {
-                setUnreadCount((prev) => prev + 1);
-              }
-            } else if (payload.eventType === 'DELETE') {
-              setMessages((prev) => prev.filter((msg) => msg.id !== payload.old.id));
-              if (!(payload.old as Message).is_read) {
-                setUnreadCount((prev) => Math.max(0, prev - 1));
-              }
-            } else if (payload.eventType === 'UPDATE') {
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === payload.new.id ? (payload.new as Message) : msg
-                )
-              );
-              if (!(payload.old as Message).is_read && (payload.new as Message).is_read) {
-                setUnreadCount((prev) => Math.max(0, prev - 1));
-              }
-            }
-          }
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['messages', profile.id] });
         }
       )
       .subscribe();
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, [profile]);
-
-  const markAsRead = async (messageId: string) => {
-    try {
-      if (!profile) throw new Error('No profile found');
-
-      const { error } = await supabase
-        .from('messages')
-        .update({ is_read: true })
-        .eq('id', messageId)
-        .eq('profile_id', profile.id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error marking message as read:', error);
-      toast.error('Failed to mark message as read');
-    }
-  };
-
-  const sendMessage = async (profileId: string, content: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .insert({
-          profile_id: profileId,
-          content,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error sending message:', error);
-      throw error;
-    }
-  };
-
-  const deleteMessage = async (messageId: string) => {
-    try {
-      if (!profile) throw new Error('No profile found');
-
-      console.log('Attempting to delete message:', { messageId, profileId: profile.id });
-
-      const { data, error } = await supabase
-        .from('messages')
-        .delete()
-        .eq('id', messageId)
-        .eq('profile_id', profile.id)
-        .select();
-
-      if (error) {
-        console.error('Supabase delete error:', error);
-        throw error;
-      }
-
-      console.log('Delete response:', data);
-    } catch (error) {
-      console.error('Error deleting message:', error);
-      toast.error('Failed to delete message');
-      throw error;
-    }
-  };
+  }, [profile, queryClient]);
 
   const value = {
     messages,
-    loading,
+    loading: isLoading,
     unreadCount,
-    markAsRead,
-    sendMessage,
-    deleteMessage,
+    markAsRead: markAsReadMutation.mutateAsync,
+    sendMessage: (profileId: string, content: string) => sendMessageMutation.mutateAsync({ profileId, content }),
+    deleteMessage: deleteMessageMutation.mutateAsync,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;
