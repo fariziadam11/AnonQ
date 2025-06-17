@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
+import { MessagesProvider } from './context/MessagesContext';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -60,7 +61,9 @@ function App() {
   return (
     <AuthProvider>
       <ProfileProvider>
-        <AppContent />
+        <MessagesProvider>
+          <AppContent />
+        </MessagesProvider>
       </ProfileProvider>
     </AuthProvider>
   );
