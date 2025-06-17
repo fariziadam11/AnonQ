@@ -89,6 +89,16 @@ CREATE POLICY "Profile owners can update their messages"
     )
   );
 
+CREATE POLICY "Profile owners can delete their messages"
+  ON messages
+  FOR DELETE
+  TO authenticated
+  USING (
+    profile_id IN (
+      SELECT id FROM profiles WHERE user_id = auth.uid()
+    )
+  );
+
 -- Create updated_at trigger for profiles
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

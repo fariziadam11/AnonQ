@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, Users, CheckCheck, Clock } from 'lucide-react';
+import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages, Message } from '../context/MessagesContext';
 import { MessageCard } from '../components/MessageCard';
@@ -10,6 +10,7 @@ export const DashboardPage: React.FC = () => {
   const { messages, loading: messagesLoading, markAsRead, unreadCount } = useMessages();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [sort, setSort] = useState<'newest' | 'oldest' | 'unread' | 'read'>('newest');
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   const filteredMessages = messages.filter((message: Message) =>
     filter === 'all' ? true : !message.is_read
@@ -44,23 +45,30 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
-  const shareLink = async () => {
+  const getShareLink = () => {
     if (profile) {
-      const link = `${window.location.origin}/u/${profile.username}`;
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: `Send me anonymous messages`,
-            text: `Send me anonymous messages on AnonQ`,
-            url: link,
-          });
-        } catch (error) {
-          // User cancelled sharing
-        }
-      } else {
-        copyLink();
-      }
+      return `${window.location.origin}/u/${profile.username}`;
     }
+    return '';
+  };
+
+  const shareToWhatsApp = () => {
+    const link = getShareLink();
+    const text = `Send me anonymous messages on AnonQ: ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareToFacebook = () => {
+    const link = getShareLink();
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+  };
+
+  const shareToInstagram = () => {
+    const link = getShareLink();
+    // Instagram Stories sharing requires a sticker image
+    // For now, we'll just copy the link to clipboard
+    navigator.clipboard.writeText(link);
+    toast.success('Link copied! Paste it in your Instagram Story');
   };
 
   if (profileLoading) {
@@ -103,13 +111,49 @@ export const DashboardPage: React.FC = () => {
                 <Copy className="h-5 w-5" />
                 <span>Copy Link</span>
               </button>
-              <button
-                onClick={shareLink}
-                className="flex items-center gap-2 px-4 py-2 bg-neoAccent2 dark:bg-neoAccent3 text-white dark:text-neoDark rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200"
-              >
-                <Share2 className="h-5 w-5" />
-                <span>Share</span>
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowShareMenu(!showShareMenu)}
+                  className="flex items-center gap-2 px-4 py-2 bg-neoAccent2 dark:bg-neoAccent3 text-white dark:text-neoDark rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200"
+                >
+                  <Share2 className="h-5 w-5" />
+                  <span>Share</span>
+                </button>
+                {showShareMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white z-10">
+                    <button
+                      onClick={() => {
+                        shareToWhatsApp();
+                        setShowShareMenu(false);
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                      <span>WhatsApp</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        shareToFacebook();
+                        setShowShareMenu(false);
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                    >
+                      <Facebook className="h-5 w-5" />
+                      <span>Facebook</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        shareToInstagram();
+                        setShowShareMenu(false);
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                    >
+                      <Instagram className="h-5 w-5" />
+                      <span>Instagram</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
