@@ -20,6 +20,7 @@ interface MessagesContextType {
   markAsRead: (messageId: string) => Promise<void>;
   sendMessage: (profileId: string, content: string) => Promise<any>;
   deleteMessage: (messageId: string) => Promise<void>;
+  deleteMessages: (messageIds: string[]) => Promise<void>;
 }
 
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
@@ -142,6 +143,28 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     },
   });
 
+  // Delete messages mutation
+  const deleteMessagesMutation = useMutation({
+    mutationFn: async (messageIds: string[]) => {
+      if (!profile) throw new Error('No profile found');
+
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .in('id', messageIds)
+        .eq('profile_id', profile.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', profile?.id] });
+    },
+    onError: (error) => {
+      console.error('Error deleting messages:', error);
+      toast.error('Failed to delete messages');
+    },
+  });
+
   // Set up real-time subscription
   React.useEffect(() => {
     if (!profile) return;
@@ -174,6 +197,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     markAsRead: markAsReadMutation.mutateAsync,
     sendMessage: (profileId: string, content: string) => sendMessageMutation.mutateAsync({ profileId, content }),
     deleteMessage: deleteMessageMutation.mutateAsync,
+    deleteMessages: deleteMessagesMutation.mutateAsync,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;

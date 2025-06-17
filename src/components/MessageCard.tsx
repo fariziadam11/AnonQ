@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, CheckCheck, Trash2 } from 'lucide-react';
+import { Clock, CheckCheck, Trash2, CheckSquare, Square } from 'lucide-react';
 import { Database } from '../lib/supabase';
 import { useMessages } from '../context/MessagesContext';
 
@@ -8,9 +8,16 @@ type Message = Database['public']['Tables']['messages']['Row'];
 export interface MessageCardProps {
   message: Message;
   onMarkAsRead: (messageId: string) => Promise<void>;
+  isSelected?: boolean;
+  onSelect?: (messageId: string) => void;
 }
 
-export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead }) => {
+export const MessageCard: React.FC<MessageCardProps> = ({ 
+  message, 
+  onMarkAsRead, 
+  isSelected = false,
+  onSelect 
+}) => {
   const { deleteMessage } = useMessages();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -53,7 +60,24 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead 
             : 'border-neoDark dark:border-white bg-white dark:bg-neoDark'
         } shadow-neo transition-all duration-200`}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          {onSelect && (
+            <button
+              onClick={() => onSelect(message.id)}
+              className={`p-1 rounded-neo transition-colors duration-200 ${
+                isSelected 
+                  ? 'text-neoAccent2 dark:text-neoAccent3' 
+                  : 'text-neoDark/40 dark:text-white/40 hover:text-neoAccent2 dark:hover:text-neoAccent3'
+              }`}
+            >
+              {isSelected ? (
+                <CheckSquare className="h-5 w-5" />
+              ) : (
+                <Square className="h-5 w-5" />
+              )}
+            </button>
+          )}
+          
           <div className="flex-1">
             <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.content}</p>
             <div className="flex items-center gap-2 mt-2 text-sm text-neoDark/50 dark:text-white/50">
@@ -72,6 +96,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({ message, onMarkAsRead 
               )}
             </div>
           </div>
+
           <div className="flex flex-col gap-2">
             {!message.is_read && (
               <button

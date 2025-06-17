@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight, Trash2, CheckSquare, Square } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages, Message } from '../context/MessagesContext';
 import { MessageCard } from '../components/MessageCard';
@@ -7,11 +7,12 @@ import toast from 'react-hot-toast';
 
 export const DashboardPage: React.FC = () => {
   const { profile, loading: profileLoading } = useProfile();
-  const { messages, loading: messagesLoading, markAsRead, unreadCount } = useMessages();
+  const { messages, loading: messagesLoading, markAsRead, unreadCount, deleteMessages } = useMessages();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [sort, setSort] = useState<'newest' | 'oldest' | 'unread' | 'read'>('newest');
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const messagesPerPage = 10;
 
   const filteredMessages = messages.filter((message: Message) =>
@@ -82,6 +83,37 @@ export const DashboardPage: React.FC = () => {
     // For now, we'll just copy the link to clipboard
     navigator.clipboard.writeText(link);
     toast.success('Link copied! Paste it in your Instagram Story');
+  };
+
+  const handleSelectAll = () => {
+    if (selectedMessages.length === paginatedMessages.length) {
+      setSelectedMessages([]);
+    } else {
+      setSelectedMessages(paginatedMessages.map(message => message.id));
+    }
+  };
+
+  const handleSelectMessage = (messageId: string) => {
+    setSelectedMessages(prev => {
+      if (prev.includes(messageId)) {
+        return prev.filter(id => id !== messageId);
+      } else {
+        return [...prev, messageId];
+      }
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedMessages.length === 0) return;
+    
+    try {
+      await deleteMessages(selectedMessages);
+      setSelectedMessages([]);
+      toast.success('Selected messages deleted successfully');
+    } catch (error) {
+      console.error('Error deleting messages:', error);
+      toast.error('Failed to delete messages');
+    }
   };
 
   if (profileLoading) {
@@ -231,12 +263,38 @@ export const DashboardPage: React.FC = () => {
             </div>
           ) : (
             <>
+              <div className="flex justify-between items-center mb-4">
+                <button
+                  onClick={handleSelectAll}
+                  className="flex items-center gap-2 px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                >
+                  {selectedMessages.length === paginatedMessages.length ? (
+                    <CheckSquare className="h-5 w-5" />
+                  ) : (
+                    <Square className="h-5 w-5" />
+                  )}
+                  <span>Select All</span>
+                </button>
+
+                {selectedMessages.length > 0 && (
+                  <button
+                    onClick={handleDeleteSelected}
+                    className="flex items-center gap-2 px-4 py-2 rounded-neo border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                    <span>Delete Selected ({selectedMessages.length})</span>
+                  </button>
+                )}
+              </div>
+
               <div className="space-y-4">
                 {paginatedMessages.map((message) => (
                   <MessageCard
                     key={message.id}
                     message={message}
                     onMarkAsRead={markAsRead}
+                    isSelected={selectedMessages.includes(message.id)}
+                    onSelect={handleSelectMessage}
                   />
                 ))}
               </div>
