@@ -157,6 +157,44 @@ export const DashboardPage: React.FC = () => {
                   <Share2 className="h-4 w-4" />
                   <span>Share</span>
                 </button>
+                {/* Social Media Share Buttons */}
+                <button
+                  onClick={() => {
+                    if (profile) {
+                      const link = `${window.location.origin}/u/${profile.username}`;
+                      const text = encodeURIComponent('Kirim aku pesan anonim di AnonQ!');
+                      window.open(`https://wa.me/?text=${text}%20${encodeURIComponent(link)}`, '_blank');
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-green-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-green-600 transition-all duration-200 font-bold"
+                >
+                  <span>🟢</span>
+                  <span>WhatsApp</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (profile) {
+                      const link = `${window.location.origin}/u/${profile.username}`;
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-blue-700 transition-all duration-200 font-bold"
+                >
+                  <span>🔵</span>
+                  <span>Facebook</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (profile) {
+                      const link = `${window.location.origin}/u/${profile.username}`;
+                      window.open(`https://www.instagram.com/?url=${encodeURIComponent(link)}`, '_blank');
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-pink-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-pink-600 transition-all duration-200 font-bold"
+                >
+                  <span>🩷</span>
+                  <span>Instagram</span>
+                </button>
               </div>
             </div>
           </div>
