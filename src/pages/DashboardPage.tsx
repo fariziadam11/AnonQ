@@ -136,13 +136,13 @@ export const DashboardPage: React.FC = () => {
             <h3 className="text-lg font-bold text-neoDark dark:text-white mb-4">
               Share your anonymous message link
             </h3>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <div className="flex-1 bg-white dark:bg-neoDark rounded-neo p-3 border-2 border-neoDark dark:border-white shadow-neo">
                 <code className="text-sm text-neoDark dark:text-white break-all">
                   {window.location.origin}/u/{profile.username}
                 </code>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 w-full sm:w-auto">
                 <button
                   onClick={copyLink}
                   className="flex items-center space-x-2 bg-neoAccent text-neoDark px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-neoAccent2 hover:text-white dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200 font-bold"
@@ -187,13 +187,14 @@ export const DashboardPage: React.FC = () => {
                   onClick={() => {
                     if (profile) {
                       const link = `${window.location.origin}/u/${profile.username}`;
-                      window.open(`https://www.instagram.com/?url=${encodeURIComponent(link)}`, '_blank');
+                      const text = encodeURIComponent('Kirim aku pesan anonim di AnonQ!');
+                      window.open(`instagram-stories://share?source_application=AnonQ&background_image=${encodeURIComponent(link)}&sticker_image=${encodeURIComponent(link)}&content_url=${encodeURIComponent(link)}&caption=${text}`, '_blank');
                     }
                   }}
                   className="flex items-center space-x-2 bg-pink-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-pink-600 transition-all duration-200 font-bold"
                 >
                   <span>🩷</span>
-                  <span>Instagram</span>
+                  <span>Instagram Story</span>
                 </button>
               </div>
             </div>
@@ -201,34 +202,36 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Messages section */}
-        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-8">
-          <div className="flex justify-between items-center mb-6">
+        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
             <h2 className="text-2xl font-extrabold text-neoDark dark:text-white">Your Messages</h2>
-            <div className="flex space-x-2 items-center">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
-                  filter === 'all'
-                    ? 'bg-neoAccent text-neoDark dark:bg-neoAccent2 dark:text-white'
-                    : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
-                }`}
-              >
-                All ({messages.length})
-              </button>
-              <button
-                onClick={() => setFilter('unread')}
-                className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
-                  filter === 'unread'
-                    ? 'bg-neoAccent2 text-white'
-                    : 'bg-white text-neoDark hover:bg-neoAccent2/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
-                }`}
-              >
-                Unread ({unreadCount})
-              </button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:space-x-2 sm:items-center">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
+                    filter === 'all'
+                      ? 'bg-neoAccent text-neoDark dark:bg-neoAccent2 dark:text-white'
+                      : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
+                  }`}
+                >
+                  All ({messages.length})
+                </button>
+                <button
+                  onClick={() => setFilter('unread')}
+                  className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
+                    filter === 'unread'
+                      ? 'bg-neoAccent2 text-white'
+                      : 'bg-white text-neoDark hover:bg-neoAccent2/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
+                  }`}
+                >
+                  Unread ({unreadCount})
+                </button>
+              </div>
               <select
                 value={sort}
                 onChange={e => setSort(e.target.value as any)}
-                className="ml-4 px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent"
+                className="px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent"
                 style={{ minWidth: 120 }}
                 aria-label="Sort messages"
               >
