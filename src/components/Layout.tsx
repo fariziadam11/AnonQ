@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { MessageCircle, User, Home, LogOut, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
-import { useMessages } from '../hooks/useMessages';
+import { useMessages } from '../context/MessagesContext';
 
 interface LayoutProps {
   children: React.ReactNode;

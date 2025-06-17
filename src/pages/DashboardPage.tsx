@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Copy, MessageCircle, Share2, Users, CheckCheck, Clock, Send, X } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
-import { useMessages } from '../hooks/useMessages';
+import { useMessages, Message } from '../context/MessagesContext';
 import { MessageCard } from '../components/MessageCard';
 import toast from 'react-hot-toast';
 
@@ -13,7 +13,7 @@ export const DashboardPage: React.FC = () => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
 
-  const filteredMessages = messages.filter((message) =>
+  const filteredMessages = messages.filter((message: Message) =>
     filter === 'all' ? true : !message.is_read
   );
 
@@ -138,7 +138,7 @@ export const DashboardPage: React.FC = () => {
             <div className="bg-neoBg dark:bg-neoDark rounded-neo p-4 text-center border-2 border-neoDark dark:border-white shadow-neo">
               <Users className="h-8 w-8 text-neoDark dark:text-white mx-auto mb-2" />
               <div className="text-2xl font-extrabold text-neoDark dark:text-white">
-                {new Set(messages.map(m => m.created_at.split('T')[0])).size}
+                {new Set(messages.map((m: Message) => m.created_at.split('T')[0])).size}
               </div>
               <div className="text-sm text-neoDark dark:text-white">Active Days</div>
             </div>
