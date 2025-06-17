@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MessageCircle, User, Home, LogOut } from 'lucide-react';
+import { MessageCircle, User, Home, LogOut, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages } from '../hooks/useMessages';
@@ -16,6 +16,21 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { unreadCount } = useMessages();
   const location = useLocation();
 
+  const [isDark, setIsDark] = React.useState(() =>
+    typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : false
+  );
+
+  const toggleDarkMode = () => {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      html.classList.add('dark');
+      setIsDark(true);
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -25,8 +40,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-neoBg">
-      <nav className="bg-white rounded-b-neo shadow-neo-lg border-b-4 border-neoDark sticky top-0 z-50">
+    <div className="min-h-screen bg-neoBg dark:bg-neoDark">
+      <nav className="bg-white dark:bg-neoDark rounded-b-neo shadow-neo-lg border-b-4 border-neoDark dark:border-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link
@@ -38,6 +53,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
 
             <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleDarkMode}
+                className="flex items-center justify-center w-10 h-10 rounded-neo border-2 border-neoDark shadow-neo bg-white dark:bg-neoDark dark:border-white transition-colors duration-200"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? <Sun className="h-5 w-5 text-neoAccent" /> : <Moon className="h-5 w-5 text-neoAccent2" />}
+              </button>
               {user && profile ? (
                 <>
                   <Link
