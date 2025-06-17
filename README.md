@@ -13,6 +13,84 @@
 - **React + TypeScript** untuk frontend
 - **Supabase** untuk autentikasi, database, dan realtime
 - **TailwindCSS** untuk styling modern dan responsif
+- **Vite** untuk build
+
+## Cara Install & Jalankan Lokal
+
+1. **Clone repo ini**
+   ```bash
+   git clone <repo-url-anda>
+   cd ngl
+   ```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+3. **Buat file `.env` di root** dan isi:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+4. **Jalankan aplikasi**
+   ```bash
+   npm run dev
+   ```
+5. **Akses di browser**
+   - Buka [http://localhost:5173](http://localhost:5173)
+
+## Deploy ke Netlify
+
+1. **Fork/Clone repo ini**
+2. **Buat file `.env` di root** dan isi:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+3. **Build Command:**
+   ```
+   npm run build
+   ```
+4. **Publish Directory:**
+   ```
+   dist
+   ```
+5. **Tambahkan file `netlify.toml`** (sudah tersedia) agar routing SPA berjalan lancar.
+6. **Deploy di Netlify** (bisa drag & drop folder dist, atau connect ke repo dan deploy otomatis)
+
+## Redirects (penting untuk SPA)
+Sudah diatur di `netlify.toml`:
+```
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+## Cara Kontribusi
+
+1. **Fork repo ini** ke akun GitHub kamu.
+2. **Clone hasil fork** ke komputer lokal:
+   ```bash
+   git clone <url-fork-anda>
+   cd ngl
+   ```
+3. **Buat branch baru** untuk fitur atau perbaikan:
+   ```bash
+   git checkout -b nama-fitur-anda
+   ```
+4. **Lakukan perubahan & commit**
+   ```bash
+   git add .
+   git commit -m "deskripsi perubahan"
+   ```
+5. **Push branch ke repo fork**
+   ```bash
+   git push origin nama-fitur-anda
+   ```
+6. **Buka Pull Request** ke repo utama.
+7. Tunggu review dan diskusi dari maintainer.
+
+Kontribusi berupa fitur baru, perbaikan bug, dokumentasi, atau saran sangat diterima!
 
 ---
 
