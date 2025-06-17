@@ -119,7 +119,7 @@ const UserListPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4 mb-8">
-        <h1 className="text-3xl font-bold">Daftar Pengguna</h1>
+        <h1 className="text-3xl font-bold">User List</h1>
         
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
@@ -129,7 +129,7 @@ const UserListPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari pengguna..."
+              placeholder="Search users..."
               className="w-full pl-10 pr-4 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white focus:ring-2 focus:ring-neoAccent focus:border-neoAccent"
             />
           </div>
@@ -142,10 +142,10 @@ const UserListPage: React.FC = () => {
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               className="pl-10 pr-4 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white focus:ring-2 focus:ring-neoAccent focus:border-neoAccent appearance-none"
             >
-              <option value="newest">Terbaru</option>
-              <option value="oldest">Terlama</option>
-              <option value="name-asc">Nama (A-Z)</option>
-              <option value="name-desc">Nama (Z-A)</option>
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
             </select>
           </div>
         </div>
