@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, Users, CheckCheck, Clock } from 'lucide-react';
+import { Copy, MessageCircle, Share2, Users, CheckCheck, Clock, Send, X } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages } from '../hooks/useMessages';
 import { MessageCard } from '../components/MessageCard';
@@ -7,9 +7,11 @@ import toast from 'react-hot-toast';
 
 export const DashboardPage: React.FC = () => {
   const { profile, loading: profileLoading } = useProfile();
-  const { messages, loading: messagesLoading, markAsRead, unreadCount } = useMessages();
+  const { messages, loading: messagesLoading, markAsRead, unreadCount, sendReply } = useMessages();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [sort, setSort] = useState<'newest' | 'oldest' | 'unread' | 'read'>('newest');
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
 
   const filteredMessages = messages.filter((message) =>
     filter === 'all' ? true : !message.is_read
@@ -60,6 +62,17 @@ export const DashboardPage: React.FC = () => {
       } else {
         copyLink();
       }
+    }
+  };
+
+  const handleReply = async (messageId: string) => {
+    try {
+      await sendReply(messageId, replyText);
+      toast.success('Reply sent successfully!');
+      setReplyingTo(null);
+      setReplyText('');
+    } catch (error) {
+      toast.error('Failed to send reply');
     }
   };
 
@@ -136,23 +149,23 @@ export const DashboardPage: React.FC = () => {
             <h3 className="text-lg font-bold text-neoDark dark:text-white mb-4">
               Share your anonymous message link
             </h3>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-4 lg:gap-6">
               <div className="flex-1 bg-white dark:bg-neoDark rounded-neo p-3 border-2 border-neoDark dark:border-white shadow-neo">
                 <code className="text-sm text-neoDark dark:text-white break-all">
                   {window.location.origin}/u/{profile.username}
                 </code>
               </div>
-              <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 w-full sm:w-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
                 <button
                   onClick={copyLink}
-                  className="flex items-center space-x-2 bg-neoAccent text-neoDark px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-neoAccent2 hover:text-white dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200 font-bold"
+                  className="flex items-center justify-center space-x-2 bg-neoAccent text-neoDark px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-neoAccent2 hover:text-white dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200 font-bold"
                 >
                   <Copy className="h-4 w-4" />
                   <span>Copy</span>
                 </button>
                 <button
                   onClick={shareLink}
-                  className="flex items-center space-x-2 bg-neoAccent3 text-neoDark px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-neoAccent2 hover:text-white dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200 font-bold"
+                  className="flex items-center justify-center space-x-2 bg-neoAccent3 text-neoDark px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-neoAccent2 hover:text-white dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200 font-bold"
                 >
                   <Share2 className="h-4 w-4" />
                   <span>Share</span>
@@ -166,7 +179,7 @@ export const DashboardPage: React.FC = () => {
                       window.open(`https://wa.me/?text=${text}%20${encodeURIComponent(link)}`, '_blank');
                     }
                   }}
-                  className="flex items-center space-x-2 bg-green-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-green-600 transition-all duration-200 font-bold"
+                  className="flex items-center justify-center space-x-2 bg-green-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-green-600 transition-all duration-200 font-bold"
                 >
                   <span>🟢</span>
                   <span>WhatsApp</span>
@@ -178,23 +191,10 @@ export const DashboardPage: React.FC = () => {
                       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
                     }
                   }}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-blue-700 transition-all duration-200 font-bold"
+                  className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-blue-700 transition-all duration-200 font-bold"
                 >
                   <span>🔵</span>
                   <span>Facebook</span>
-                </button>
-                <button
-                  onClick={() => {
-                    if (profile) {
-                      const link = `${window.location.origin}/u/${profile.username}`;
-                      const text = encodeURIComponent('Kirim aku pesan anonim di AnonQ!');
-                      window.open(`instagram-stories://share?source_application=AnonQ&background_image=${encodeURIComponent(link)}&sticker_image=${encodeURIComponent(link)}&content_url=${encodeURIComponent(link)}&caption=${text}`, '_blank');
-                    }
-                  }}
-                  className="flex items-center space-x-2 bg-pink-500 text-white px-4 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo hover:bg-pink-600 transition-all duration-200 font-bold"
-                >
-                  <span>🩷</span>
-                  <span>Instagram Story</span>
                 </button>
               </div>
             </div>
@@ -202,10 +202,10 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Messages section */}
-        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-8">
+        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
             <h2 className="text-2xl font-extrabold text-neoDark dark:text-white">Your Messages</h2>
-            <div className="flex flex-col gap-2 sm:flex-row sm:space-x-2 sm:items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <div className="flex gap-2">
                 <button
                   onClick={() => setFilter('all')}
@@ -231,7 +231,7 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={sort}
                 onChange={e => setSort(e.target.value as any)}
-                className="px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent"
+                className="w-full sm:w-auto px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent"
                 style={{ minWidth: 120 }}
                 aria-label="Sort messages"
               >
@@ -263,11 +263,45 @@ export const DashboardPage: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {sortedMessages.map((message) => (
-                <MessageCard
-                  key={message.id}
-                  message={message}
-                  onMarkAsRead={markAsRead}
-                />
+                <div key={message.id}>
+                  <MessageCard
+                    message={message}
+                    onMarkAsRead={markAsRead}
+                    onReply={() => setReplyingTo(message.id)}
+                  />
+                  {replyingTo === message.id && (
+                    <div className="mt-2 ml-8 p-4 bg-neoBg dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white shadow-neo">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-bold text-neoDark dark:text-white">Reply to message</h4>
+                        <button
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyText('');
+                          }}
+                          className="text-neoDark dark:text-white hover:text-neoAccent2"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <textarea
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder="Type your reply..."
+                          className="flex-1 p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white focus:outline-none focus:ring-2 focus:ring-neoAccent"
+                          rows={3}
+                        />
+                        <button
+                          onClick={() => handleReply(message.id)}
+                          disabled={!replyText.trim()}
+                          className="flex items-center justify-center px-4 py-2 bg-neoAccent2 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Send className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}
