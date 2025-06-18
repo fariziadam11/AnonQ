@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { Clock, CheckCheck, Trash2, CheckSquare, Square, Share2, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, CheckCheck, Trash2, CheckSquare, Square, Download, Eye, X } from 'lucide-react';
 import { Database } from '../lib/supabase';
 import { useMessages } from '../context/MessagesContext';
 import html2canvas from 'html2canvas';
+import { toast } from 'react-hot-toast';
 
 type Message = Database['public']['Tables']['messages']['Row'];
 
@@ -24,22 +25,6 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   const { deleteMessage } = useMessages();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
 
   const handleMarkAsRead = async () => {
     if (!message.is_read) {
@@ -57,117 +42,92 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   };
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
-
     try {
-      // Create a temporary container for the image
-      const container = document.createElement('div') as HTMLDivElement;
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '-9999px';
-      container.style.width = '600px'; // Fixed width for consistency
-      container.style.padding = '20px';
-      container.style.backgroundColor = 'white';
-      document.body.appendChild(container);
+      const cardElement = document.getElementById(`message-card-${message.id}`);
+      if (!cardElement) return;
 
-      // Create header
-      const header = document.createElement('div') as HTMLDivElement;
+      // Create a clone of the card element
+      const clone = cardElement.cloneNode(true) as HTMLElement;
+      
+      // Hide elements that shouldn't be in the image
+      const elementsToHide = clone.querySelectorAll('.hide-in-image');
+      elementsToHide.forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
+        }
+      });
+
+      // Add header to the clone
+      const header = document.createElement('div');
       header.style.padding = '16px';
-      header.style.borderBottom = '2px solid #e5e7eb';
+      header.style.borderBottom = '2px solid #000';
       header.style.marginBottom = '16px';
-      header.style.display = 'flex';
-      header.style.alignItems = 'center';
-      header.style.justifyContent = 'space-between';
+      header.style.backgroundColor = '#fff';
+      header.style.color = '#000';
+      header.style.fontFamily = 'Arial, sans-serif';
       
-      const title = document.createElement('h2') as HTMLHeadingElement;
-      title.textContent = 'NGL Message';
-      title.style.fontSize = '24px';
+      const title = document.createElement('h2');
+      title.textContent = 'Anonymous Message';
+      title.style.margin = '0';
+      title.style.fontSize = '20px';
       title.style.fontWeight = 'bold';
-      title.style.color = '#1f2937';
       
-      const timestamp = document.createElement('span') as HTMLSpanElement;
-      timestamp.textContent = formatTime(message.created_at);
-      timestamp.style.color = '#6b7280';
+      const timestamp = document.createElement('p');
+      timestamp.textContent = new Date(message.created_at).toLocaleString();
+      timestamp.style.margin = '8px 0 0';
       timestamp.style.fontSize = '14px';
+      timestamp.style.color = '#666';
       
       header.appendChild(title);
       header.appendChild(timestamp);
-      container.appendChild(header);
+      clone.insertBefore(header, clone.firstChild);
 
-      // Clone the card content
-      const cardClone = cardRef.current.cloneNode(true) as HTMLElement;
-      
-      // Remove action buttons and checkbox
-      const actionButtons = cardClone.querySelector('.action-buttons');
-      if (actionButtons) {
-        actionButtons.remove();
-      }
-      const checkbox = cardClone.querySelector('.checkbox-container');
-      if (checkbox) {
-        checkbox.remove();
-      }
-      
-      // Remove any max-height or overflow constraints
-      const contentElement = cardClone.querySelector('p');
-      if (contentElement) {
-        contentElement.style.maxHeight = 'none';
-        contentElement.style.overflow = 'visible';
-        contentElement.style.whiteSpace = 'pre-wrap';
-        contentElement.style.wordBreak = 'break-word';
-      }
+      // Set background color for the clone
+      clone.style.backgroundColor = '#fff';
+      clone.style.padding = '16px';
+      clone.style.borderRadius = '8px';
+      clone.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+      clone.style.width = '600px';
+      clone.style.margin = '0 auto';
 
-      container.appendChild(cardClone);
+      // Create a container for the clone
+      const container = document.createElement('div');
+      container.style.backgroundColor = '#f5f5f5';
+      container.style.padding = '20px';
+      container.style.width = '640px';
+      container.style.height = 'auto';
+      container.appendChild(clone);
 
-      // Create canvas from the container
+      // Append container to body temporarily
+      document.body.appendChild(container);
+
       const canvas = await html2canvas(container, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
+        scale: 2,
+        backgroundColor: '#f5f5f5',
         logging: false,
-        useCORS: true,
-        width: 600,
-        height: container.offsetHeight,
+        useCORS: true
       });
 
-      // Clean up
+      // Remove the temporary container
       document.body.removeChild(container);
 
-      // Convert canvas to blob
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        
-        // Create download link
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ngl-message-${message.id}.png`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }, 'image/png');
+      const link = document.createElement('a');
+      link.download = `message-${message.id}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
     } catch (error) {
-      console.error('Error generating image:', error);
-    }
-  };
-
-  const handleCopyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(message.content);
-      alert('Message copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy message:', err);
+      console.error('Error downloading message:', error);
+      toast.error('Failed to download message');
     }
   };
 
   return (
     <>
       <div
-        ref={cardRef}
-        className={`p-4 rounded-neo border-2 ${
-          message.is_read
-            ? 'border-neoDark/20 dark:border-white/20 bg-white/50 dark:bg-neoDark/50'
-            : 'border-neoDark dark:border-white bg-white dark:bg-neoDark'
-        } shadow-neo transition-all duration-200`}
+        id={`message-card-${message.id}`}
+        className={`bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8 transition-all duration-200 ${
+          isSelected ? 'ring-4 ring-neoAccent2 dark:ring-neoAccent3' : ''
+        }`}
       >
         <div className="flex flex-col gap-4">
           {isSelectionMode && onSelect && (
@@ -193,18 +153,14 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.content}</p>
             <div className="flex flex-wrap items-center justify-between gap-2 mt-2 text-sm text-neoDark/50 dark:text-white/50">
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-shrink-0">{formatTime(message.created_at)}</span>
-                {message.is_read ? (
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <CheckCheck className="h-4 w-4" />
-                    <span>Read</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <Clock className="h-4 w-4" />
-                    <span>Unread</span>
-                  </div>
+                <span className="text-sm text-neoDark/70 dark:text-white/70 flex items-center gap-1 hide-in-image">
+                  <Clock className="h-4 w-4" />
+                  {new Date(message.created_at).toLocaleString()}
+                </span>
+                {!message.is_read && (
+                  <span className="text-sm text-neoAccent2 dark:text-neoAccent3 font-bold hide-in-image">
+                    Unread
+                  </span>
                 )}
               </div>
               <div className="flex items-center gap-2 action-buttons">
@@ -213,7 +169,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                   className="p-1.5 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
                   title="Preview message"
                 >
-                  <Share2 className="h-4 w-4" />
+                  <Eye className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleDownload}
@@ -246,25 +202,19 @@ export const MessageCard: React.FC<MessageCardProps> = ({
 
       {/* Preview Modal */}
       {showPreview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold text-neoDark dark:text-white mb-4">Message Preview</h3>
-            <div className="bg-neoDark/5 dark:bg-white/5 p-4 rounded-neo mb-4">
-              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.content}</p>
-            </div>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleCopyToClipboard}
-                className="px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-              >
-                Copy to Clipboard
-              </button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-bold text-neoDark dark:text-white">Message Preview</h3>
               <button
                 onClick={() => setShowPreview(false)}
-                className="px-4 py-2 bg-neoAccent dark:bg-neoAccent2 text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/80 dark:hover:bg-neoAccent2/80 transition-all duration-200"
+                className="text-neoDark/70 dark:text-white/70 hover:text-neoDark dark:hover:text-white"
               >
-                Close
+                <X className="h-6 w-6" />
               </button>
+            </div>
+            <div className="prose dark:prose-invert max-w-none">
+              <p className="whitespace-pre-wrap break-words">{message.content}</p>
             </div>
           </div>
         </div>
