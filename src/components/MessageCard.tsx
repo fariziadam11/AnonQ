@@ -60,11 +60,11 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             : 'border-neoDark dark:border-white bg-white dark:bg-neoDark'
         } shadow-neo transition-all duration-200`}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
           {onSelect && (
             <button
               onClick={() => onSelect(message.id)}
-              className={`p-1 rounded-neo transition-colors duration-200 ${
+              className={`p-1 rounded-neo transition-colors duration-200 flex-shrink-0 ${
                 isSelected 
                   ? 'text-neoAccent2 dark:text-neoAccent3' 
                   : 'text-neoDark/40 dark:text-white/40 hover:text-neoAccent2 dark:hover:text-neoAccent3'
@@ -78,18 +78,18 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             </button>
           )}
           
-          <div className="flex-1">
-            <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.content}</p>
-            <div className="flex items-center gap-2 mt-2 text-sm text-neoDark/50 dark:text-white/50">
-              <Clock className="h-4 w-4" />
-              <span>{formatTime(message.created_at)}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words overflow-hidden">{message.content}</p>
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-neoDark/50 dark:text-white/50">
+              <Clock className="h-4 w-4 flex-shrink-0" />
+              <span className="flex-shrink-0">{formatTime(message.created_at)}</span>
               {message.is_read ? (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <CheckCheck className="h-4 w-4" />
                   <span>Read</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   <Clock className="h-4 w-4" />
                   <span>Unread</span>
                 </div>
@@ -97,7 +97,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-row sm:flex-col gap-2 self-start">
             {!message.is_read && (
               <button
                 onClick={handleMarkAsRead}
