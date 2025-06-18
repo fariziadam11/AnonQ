@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, CheckCheck, Trash2, CheckSquare, Square, Download, Eye, X } from 'lucide-react';
+import { Clock, CheckCheck, Trash2, CheckSquare, Square, Download, Eye, X, User } from 'lucide-react';
 import { Database } from '../lib/supabase';
 import { useMessages } from '../context/MessagesContext';
 import html2canvas from 'html2canvas';
@@ -121,13 +121,31 @@ export const MessageCard: React.FC<MessageCardProps> = ({
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInHours * 60);
+      return `${diffInMinutes}m ago`;
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)}h ago`;
+    } else if (diffInHours < 168) { // 7 days
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays}d ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
+
   return (
     <>
       <div
         id={`message-card-${message.id}`}
         className={`bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8 transition-all duration-200 ${
           isSelected ? 'ring-4 ring-neoAccent2 dark:ring-neoAccent3' : ''
-        }`}
+        } ${!message.is_read ? 'border-neoAccent2 dark:border-neoAccent3' : ''}`}
       >
         <div className="flex flex-col gap-4">
           {isSelectionMode && onSelect && (
@@ -150,30 +168,47 @@ export const MessageCard: React.FC<MessageCardProps> = ({
           )}
           
           <div className="flex-1 min-w-0">
-            <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words">{message.content}</p>
-            <div className="flex flex-wrap items-center justify-between gap-2 mt-2 text-sm text-neoDark/50 dark:text-white/50">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-neoDark/70 dark:text-white/70 flex items-center gap-1 hide-in-image">
-                  <Clock className="h-4 w-4" />
-                  {new Date(message.created_at).toLocaleString()}
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-neoAccent2 dark:bg-neoAccent3 flex items-center justify-center flex-shrink-0">
+                <User className="h-5 w-5 text-white dark:text-neoDark" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-bold text-neoDark dark:text-white">Anonymous</span>
+                  {!message.is_read && (
+                    <span className="px-2 py-1 text-xs font-bold bg-neoAccent2 text-white rounded-neo">
+                      NEW
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm text-neoDark/70 dark:text-white/70 hide-in-image">
+                  {formatDate(message.created_at)}
                 </span>
-                {!message.is_read && (
-                  <span className="text-sm text-neoAccent2 dark:text-neoAccent3 font-bold hide-in-image">
-                    Unread
-                  </span>
-                )}
+              </div>
+            </div>
+            
+            <div className="bg-neoBg dark:bg-neoDark/50 rounded-neo p-4 border-2 border-neoDark/10 dark:border-white/10">
+              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words leading-relaxed">
+                {message.content}
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
+              <div className="flex items-center gap-2 text-sm text-neoDark/50 dark:text-white/50 hide-in-image">
+                <Clock className="h-4 w-4" />
+                <span>{new Date(message.created_at).toLocaleString()}</span>
               </div>
               <div className="flex items-center gap-2 action-buttons">
                 <button
                   onClick={() => setShowPreview(true)}
-                  className="p-1.5 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
+                  className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
                   title="Preview message"
                 >
                   <Eye className="h-4 w-4" />
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="p-1.5 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
+                  className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
                   title="Download as image"
                 >
                   <Download className="h-4 w-4" />
@@ -181,7 +216,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                 {!message.is_read && (
                   <button
                     onClick={handleMarkAsRead}
-                    className="p-1.5 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
+                    className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
                     title="Mark as read"
                   >
                     <CheckCheck className="h-4 w-4" />
@@ -189,7 +224,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                 )}
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-1.5 text-neoDark dark:text-white hover:text-red-500 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
+                  className="p-2 text-neoDark dark:text-white hover:text-red-500 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
                   title="Delete message"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -214,7 +249,14 @@ export const MessageCard: React.FC<MessageCardProps> = ({
               </button>
             </div>
             <div className="prose dark:prose-invert max-w-none">
-              <p className="whitespace-pre-wrap break-words">{message.content}</p>
+              <div className="bg-neoBg dark:bg-neoDark/50 rounded-neo p-4 border-2 border-neoDark/10 dark:border-white/10">
+                <p className="whitespace-pre-wrap break-words text-neoDark dark:text-white">
+                  {message.content}
+                </p>
+              </div>
+              <div className="mt-4 text-sm text-neoDark/70 dark:text-white/70">
+                Received: {new Date(message.created_at).toLocaleString()}
+              </div>
             </div>
           </div>
         </div>
