@@ -74,33 +74,44 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const sendMessageMutation = useMutation({
     mutationFn: async ({ profileId, content }: { profileId: string; content: string }) => {
       try {
-        if (!profile) throw new Error('No profile found');
-        if (!user) throw new Error('No authenticated user found');
+        // Jika user login, tambahkan user_id (untuk dashboard, dsb)
+        if (user && profile) {
+          const { data, error } = await supabase
+            .from('messages')
+            .insert({
+              profile_id: profileId,
+              content,
+              is_read: false,
+              user_id: user.id
+            })
+            .select()
+            .single();
 
-        console.log('Sending message with:', {
-          profileId,
-          content,
-          currentUserId: user.id,
-          currentProfileId: profile.id
-        });
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+          return data;
+        } else if (profileId && content) {
+          // Guest/anonymous: hanya butuh profileId tujuan dan content
+          const { data, error } = await supabase
+            .from('messages')
+            .insert({
+              profile_id: profileId,
+              content,
+              is_read: false
+            })
+            .select()
+            .single();
 
-        const { data, error } = await supabase
-          .from('messages')
-          .insert({
-            profile_id: profileId,
-            content,
-            is_read: false,
-            user_id: user.id
-          })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Supabase error:', error);
-          throw error;
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+          return data;
+        } else {
+          throw new Error('Profile tujuan tidak ditemukan');
         }
-
-        return data;
       } catch (error) {
         console.error('Error sending message:', error);
         throw error;
@@ -111,10 +122,8 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     },
     onError: (error: any) => {
       console.error('Error sending message:', error);
-      if (error.message === 'No profile found') {
-        toast.error('Profile tidak ditemukan');
-      } else if (error.message === 'No authenticated user found') {
-        toast.error('Anda harus login untuk mengirim pesan');
+      if (error.message === 'Profile tujuan tidak ditemukan') {
+        toast.error('Profile tujuan tidak ditemukan');
       } else {
         toast.error('Gagal mengirim pesan. Silakan coba lagi.');
       }
