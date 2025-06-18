@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useProfile } from './ProfileContext';
-import { useAuth } from './AuthContext';
+
 import toast from 'react-hot-toast';
 
 export interface Message {
@@ -11,7 +11,6 @@ export interface Message {
   content: string;
   is_read: boolean;
   created_at: string;
-  user_id?: string;
 }
 
 export interface MessageStats {
@@ -38,7 +37,6 @@ const MessagesContext = createContext<MessagesContextType | undefined>(undefined
 
 export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { profile } = useProfile();
-  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch messages query
@@ -125,20 +123,12 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const sendMessageMutation = useMutation({
     mutationFn: async ({ profileId, content }: { profileId: string; content: string }) => {
       try {
-        // If user is logged in, include user_id for tracking
-        const messageData: any = {
-          profile_id: profileId,
-          content,
-          is_read: false
-        };
-
-        if (user) {
-          messageData.user_id = user.id;
-        }
-
         const { data, error } = await supabase
           .from('messages')
-          .insert(messageData)
+          .insert({
+            profile_id: profileId,
+            content,
+          })
           .select()
           .single();
 

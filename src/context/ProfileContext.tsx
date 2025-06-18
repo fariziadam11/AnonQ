@@ -8,7 +8,7 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 interface ProfileContextType {
   profile: Profile | null;
   loading: boolean;
-  getProfileByUsername: (username: string) => Promise<Profile>;
+  getProfileByUsername: (username: string) => Promise<Profile | null>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -42,7 +42,13 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       .eq('username', username)
       .single();
 
-    if (error) throw error;
+    // Gracefully handle profile not found (PGRST116) by returning null
+    // For other errors, re-throw them to be handled by the caller
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching profile by username:', error);
+      throw error;
+    }
+
     return data;
   };
 
