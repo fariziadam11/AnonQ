@@ -85,7 +85,7 @@ export const DashboardPage: React.FC = () => {
 
   const handleMarkAllAsRead = async () => {
     if (unreadCount === 0) {
-      toast.info('No unread messages to mark');
+      toast('No unread messages to mark');
       return;
     }
     try {
