@@ -73,6 +73,18 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Cek environment variable maintenance
+  const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
+  if (isMaintenance) {
+    return (
+      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
+        <div style={{textAlign: 'center'}}>
+          <h1>Maintenance</h1>
+          <p>Situs sedang dalam perbaikan. Silakan kembali lagi nanti.</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
