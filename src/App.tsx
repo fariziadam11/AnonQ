@@ -77,10 +77,30 @@ const App: React.FC = () => {
   const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
   if (isMaintenance) {
     return (
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh'}}>
-        <div style={{textAlign: 'center'}}>
-          <h1>Maintenance</h1>
-          <p>Situs sedang dalam perbaikan. Silakan kembali lagi nanti.</p>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: '1.5rem',
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2)',
+          padding: '3rem 2.5rem',
+          maxWidth: 400,
+          width: '100%',
+          textAlign: 'center',
+        }}>
+          <div style={{fontSize: 64, marginBottom: 16}}>
+            <span role="img" aria-label="maintenance">🛠️</span>
+          </div>
+          <h1 style={{fontSize: '2.2rem', fontWeight: 700, marginBottom: 12, color: '#7b4397'}}>Maintenance</h1>
+          <p style={{fontSize: '1.1rem', color: '#333', marginBottom: 24}}>
+            Situs sedang dalam perbaikan untuk peningkatan layanan.<br />Silakan kembali lagi nanti.<br /><br />Terima kasih atas pengertiannya!
+          </p>
+          <div style={{fontSize: '0.95rem', color: '#888'}}>— Tim Developer</div>
         </div>
       </div>
     );
