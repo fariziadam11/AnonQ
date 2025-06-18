@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight, Trash2, CheckSquare, Square } from 'lucide-react';
+import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useProfile } from '../context/ProfileContext';
-import { useMessages, Message } from '../context/MessagesContext';
-import { MessageCard } from '../components/MessageCard';
+import { useMessages } from '../context/MessagesContext';
+import { MessageList } from '../components/MessageList';
 import toast from 'react-hot-toast';
 
 export const DashboardPage: React.FC = () => {
@@ -12,10 +12,9 @@ export const DashboardPage: React.FC = () => {
   const [sort, setSort] = useState<'newest' | 'oldest' | 'unread' | 'read'>('newest');
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const messagesPerPage = 10;
 
-  const filteredMessages = messages.filter((message: Message) =>
+  const filteredMessages = messages.filter((message) =>
     filter === 'all' ? true : !message.is_read
   );
 
@@ -85,37 +84,6 @@ export const DashboardPage: React.FC = () => {
     toast.success('Link copied! Paste it in your Instagram Story');
   };
 
-  const handleSelectAll = () => {
-    if (selectedMessages.length === paginatedMessages.length) {
-      setSelectedMessages([]);
-    } else {
-      setSelectedMessages(paginatedMessages.map(message => message.id));
-    }
-  };
-
-  const handleSelectMessage = (messageId: string) => {
-    setSelectedMessages(prev => {
-      if (prev.includes(messageId)) {
-        return prev.filter(id => id !== messageId);
-      } else {
-        return [...prev, messageId];
-      }
-    });
-  };
-
-  const handleDeleteSelected = async () => {
-    if (selectedMessages.length === 0) return;
-    
-    try {
-      await deleteMessages(selectedMessages);
-      setSelectedMessages([]);
-      toast.success('Selected messages deleted successfully');
-    } catch (error) {
-      console.error('Error deleting messages:', error);
-      toast.error('Failed to delete messages');
-    }
-  };
-
   if (profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -159,13 +127,13 @@ export const DashboardPage: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="flex items-center gap-2 px-4 py-2 bg-neoAccent2 dark:bg-neoAccent3 text-white dark:text-neoDark rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark dark:hover:bg-neoAccent2 dark:hover:text-white transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
                 >
                   <Share2 className="h-5 w-5" />
                   <span>Share</span>
                 </button>
                 {showShareMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white py-2 z-10">
                     <button
                       onClick={() => {
                         shareToWhatsApp();
@@ -263,41 +231,11 @@ export const DashboardPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <button
-                  onClick={handleSelectAll}
-                  className="flex items-center gap-2 px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-                >
-                  {selectedMessages.length === paginatedMessages.length ? (
-                    <CheckSquare className="h-5 w-5" />
-                  ) : (
-                    <Square className="h-5 w-5" />
-                  )}
-                  <span>Select All</span>
-                </button>
-
-                {selectedMessages.length > 0 && (
-                  <button
-                    onClick={handleDeleteSelected}
-                    className="flex items-center gap-2 px-4 py-2 rounded-neo border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-200"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                    <span>Delete Selected ({selectedMessages.length})</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-4">
-                {paginatedMessages.map((message) => (
-                  <MessageCard
-                    key={message.id}
-                    message={message}
-                    onMarkAsRead={markAsRead}
-                    isSelected={selectedMessages.includes(message.id)}
-                    onSelect={handleSelectMessage}
-                  />
-                ))}
-              </div>
+              <MessageList
+                messages={paginatedMessages}
+                onMarkAsRead={markAsRead}
+                onDeleteSelected={deleteMessages}
+              />
               
               <div className="mt-6 p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white">
                 <div className="flex justify-between items-center mb-2">
