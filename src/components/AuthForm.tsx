@@ -110,7 +110,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-4 py-3 border-2 border-neoDark dark:border-white rounded-neo focus:ring-2 focus:ring-neoAccent focus:border-neoAccent transition-all duration-200 bg-neoBg dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo"
-                placeholder="Enter your email"
+                placeholder="Enter your real email"
                 required
               />
             </div>
