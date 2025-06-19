@@ -61,22 +61,31 @@ export type Database = {
         Row: {
           id: string;
           profile_id: string;
+          sender_id: string | null;
+          sender_profile_id: string | null;
           content: string;
           is_read: boolean;
+          message_type: 'anonymous' | 'user_to_user';
           created_at: string;
         };
         Insert: {
           id?: string;
           profile_id: string;
+          sender_id?: string | null;
+          sender_profile_id?: string | null;
           content: string;
           is_read?: boolean;
+          message_type?: 'anonymous' | 'user_to_user';
           created_at?: string;
         };
         Update: {
           id?: string;
           profile_id?: string;
+          sender_id?: string | null;
+          sender_profile_id?: string | null;
           content?: string;
           is_read?: boolean;
+          message_type?: 'anonymous' | 'user_to_user';
           created_at?: string;
         };
       };

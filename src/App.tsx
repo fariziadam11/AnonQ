@@ -12,6 +12,9 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import UserListPage from './pages/UserListPage';
 import { useAuth } from './context/AuthContext';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -44,6 +47,8 @@ const AppContent: React.FC = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route
             path="/dashboard"
             element={
@@ -54,6 +59,7 @@ const AppContent: React.FC = () => {
           />
           <Route path="/u/:username" element={<ProfilePage />} />
           <Route path="/users" element={<UserListPage />} />
+          <Route path="/verify-email" element={<EmailVerificationPage />} />
         </Routes>
       </Layout>
       <Toaster

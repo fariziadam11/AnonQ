@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Send, MessageCircle } from 'lucide-react';
 import { useMessages } from '../context/MessagesContext';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 interface MessageFormProps {
   profileId: string;
@@ -15,6 +16,8 @@ export const MessageForm: React.FC<MessageFormProps> = ({
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const { sendMessage } = useMessages();
+  const { user } = useAuth();
+  const [messageType, setMessageType] = useState<'anonymous' | 'user_to_user'>('anonymous');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,9 +28,13 @@ export const MessageForm: React.FC<MessageFormProps> = ({
 
     setLoading(true);
     try {
-      await sendMessage(profileId, message.trim());
+      await sendMessage(profileId, message.trim(), messageType);
       setMessage('');
-      toast.success('Message sent anonymously!');
+      toast.success(
+        messageType === 'anonymous'
+          ? 'Message sent anonymously!'
+          : 'Message sent as user!'
+      );
     } catch (error: any) {
       toast.error(error.message || 'Failed to send message');
     } finally {
@@ -48,6 +55,32 @@ export const MessageForm: React.FC<MessageFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {user && (
+          <div className="mb-4 flex gap-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="messageType"
+                value="anonymous"
+                checked={messageType === 'anonymous'}
+                onChange={() => setMessageType('anonymous')}
+                className="accent-neoAccent2 dark:accent-neoAccent3"
+              />
+              <span>Anonymous</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="messageType"
+                value="user_to_user"
+                checked={messageType === 'user_to_user'}
+                onChange={() => setMessageType('user_to_user')}
+                className="accent-neoAccent2 dark:accent-neoAccent3"
+              />
+              <span>User-to-User</span>
+            </label>
+          </div>
+        )}
         <div>
           <label className="block text-sm font-bold text-neoDark dark:text-white mb-2">
             Your anonymous message

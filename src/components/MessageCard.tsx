@@ -174,7 +174,18 @@ export const MessageCard: React.FC<MessageCardProps> = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-neoDark dark:text-white">Anonymous</span>
+                  <span className="font-bold text-neoDark dark:text-white">
+                    {message.message_type === 'user_to_user' ? (
+                      <>
+                        User Message
+                        {message.sender_profile_id && (
+                          <span className="ml-2 text-xs text-neoAccent2 dark:text-neoAccent3">from you</span>
+                        )}
+                      </>
+                    ) : (
+                      'Anonymous'
+                    )}
+                  </span>
                   {!message.is_read && (
                     <span className="px-2 py-1 text-xs font-bold bg-neoAccent2 text-white rounded-neo">
                       NEW

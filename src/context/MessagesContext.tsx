@@ -8,8 +8,11 @@ import toast from 'react-hot-toast';
 export interface Message {
   id: string;
   profile_id: string;
+  sender_id: string | null;
+  sender_profile_id: string | null;
   content: string;
   is_read: boolean;
+  message_type: 'anonymous' | 'user_to_user';
   created_at: string;
 }
 
@@ -18,7 +21,7 @@ interface MessagesContextType {
   loading: boolean;
   unreadCount: number;
   markAsRead: (messageId: string) => Promise<void>;
-  sendMessage: (profileId: string, content: string) => Promise<any>;
+  sendMessage: (profileId: string, content: string, messageType?: 'anonymous' | 'user_to_user') => Promise<any>;
   deleteMessage: (messageId: string) => Promise<void>;
   deleteMessages: (messageIds: string[]) => Promise<void>;
 }
@@ -72,34 +75,51 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Send message mutation
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ profileId, content }: { profileId: string; content: string }) => {
+    mutationFn: async ({ profileId, content, messageType }: { profileId: string; content: string; messageType?: 'anonymous' | 'user_to_user' }) => {
       try {
-        if (!profile) throw new Error('No profile found');
-        if (!user) throw new Error('No authenticated user found');
-
-        console.log('Sending message with:', {
-          profileId,
-          content,
-          currentUserId: user.id,
-          currentProfileId: profile.id
-        });
-
-        const { data, error } = await supabase
-          .from('messages')
-          .insert({
+        if (messageType === 'user_to_user') {
+          if (!profile || !user) throw new Error('No profile found');
+          let insertData: any = {
             profile_id: profileId,
             content,
-            is_read: false
-          })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Supabase error:', error);
-          throw error;
+            is_read: false,
+            message_type: 'user_to_user',
+            sender_id: user.id,
+            sender_profile_id: profile.id,
+          };
+          console.log('Insert user-to-user:', { insertData, user, profile });
+          const { data, error } = await supabase
+            .from('messages')
+            .insert(insertData)
+            .select()
+            .single();
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+          return data;
+        } else {
+          // Anonymous message, allow guest (no profile/user required)
+          let insertData: any = {
+            profile_id: profileId,
+            content,
+            is_read: false,
+            message_type: 'anonymous',
+            sender_id: null,
+            sender_profile_id: null,
+          };
+          console.log('Insert anonymous:', { insertData });
+          const { data, error } = await supabase
+            .from('messages')
+            .insert(insertData)
+            .select()
+            .single();
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+          return data;
         }
-
-        return data;
       } catch (error) {
         console.error('Error sending message:', error);
         throw error;
@@ -112,8 +132,8 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.error('Error sending message:', error);
       if (error.message === 'No profile found') {
         toast.error('Profile tidak ditemukan');
-      } else if (error.message === 'No authenticated user found') {
-        toast.error('Anda harus login untuk mengirim pesan');
+      } else if (error.message === 'You must be logged in to send user-to-user messages') {
+        toast.error('Anda harus login untuk mengirim pesan user-to-user');
       } else {
         toast.error('Gagal mengirim pesan. Silakan coba lagi.');
       }
@@ -194,7 +214,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     loading: isLoading,
     unreadCount,
     markAsRead: markAsReadMutation.mutateAsync,
-    sendMessage: (profileId: string, content: string) => sendMessageMutation.mutateAsync({ profileId, content }),
+    sendMessage: (profileId: string, content: string, messageType?: 'anonymous' | 'user_to_user') => sendMessageMutation.mutateAsync({ profileId, content, messageType }),
     deleteMessage: deleteMessageMutation.mutateAsync,
     deleteMessages: deleteMessagesMutation.mutateAsync,
   };

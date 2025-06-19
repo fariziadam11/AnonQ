@@ -42,21 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
     });
-
     if (error) throw error;
-
-    if (data.user) {
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: data.user.id,
-          username,
-        });
-
-      if (profileError) throw profileError;
-    }
-
+    // Do NOT insert profile here. Wait until after login.
     return data;
   };
 
@@ -65,8 +52,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
     });
-
     if (error) throw error;
+    // After successful login, check if profile exists, if not, create it
+    const user = data.user;
+    if (user) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      if (!profile) {
+        // Try to get username from localStorage (set during sign up)
+        let username = localStorage.getItem('pending_username') || '';
+        if (!username) username = user.email?.split('@')[0] || '';
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({ user_id: user.id, username });
+        if (insertError) throw insertError;
+        localStorage.removeItem('pending_username');
+      }
+    }
     return data;
   };
 

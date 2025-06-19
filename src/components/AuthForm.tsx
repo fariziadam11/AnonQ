@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthFormProps {
   onSuccess?: () => void;
+  mode?: 'login' | 'register';
 }
 
-export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true);
+export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
+  const [isLogin, setIsLogin] = useState(mode ? mode === 'login' : true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,6 +20,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   });
 
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +44,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
         await signUp(formData.email, formData.password, formData.username);
         toast.success('Account created successfully!');
+        localStorage.setItem('pending_username', formData.username);
+        navigate('/verify-email');
+        return;
       }
       onSuccess?.();
     } catch (error: any) {
@@ -144,16 +150,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-neoAccent2 hover:text-neoAccent3 font-bold transition-colors duration-200"
-          >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : 'Already have an account? Sign in'}
-          </button>
-        </div>
+        {!mode && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin((prev) => !prev)}
+              className="text-neoAccent2 hover:text-neoAccent3 font-bold transition-colors duration-200"
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : 'Already have an account? Sign in'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

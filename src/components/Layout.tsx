@@ -119,13 +119,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/"
-                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-neoAccent2 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200"
-                >
-                  <Home className="h-5 w-5" />
-                  <span>Get Started</span>
-                </Link>
+                <>
+                  <button
+                    onClick={() => window.location.href = '/login'}
+                    className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-neoAccent2 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200"
+                  >
+                    <span>Login</span>
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/register'}
+                    className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-neoAccent3 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent2 hover:text-neoDark transition-all duration-200"
+                  >
+                    <span>Register</span>
+                  </button>
+                </>
               )}
             </div>
           </div>

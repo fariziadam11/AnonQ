@@ -1,0 +1,16 @@
+import React from 'react';
+import { AuthForm } from '../components/AuthForm';
+import { useNavigate } from 'react-router-dom';
+
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-yellow-300 dark:bg-gray-900">
+      <div className="w-full max-w-md mx-auto">
+        <AuthForm onSuccess={() => navigate('/verify-email')} mode="register" />
+      </div>
+    </div>
+  );
+};
+
+export default RegisterPage; 
