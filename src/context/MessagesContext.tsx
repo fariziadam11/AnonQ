@@ -89,8 +89,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           .insert({
             profile_id: profileId,
             content,
-            is_read: false,
-            user_id: user.id
+            is_read: false
           })
           .select()
           .single();
@@ -209,4 +208,4 @@ export const useMessages = () => {
     throw new Error('useMessages must be used within a MessagesProvider');
   }
   return context;
-}; 
+};

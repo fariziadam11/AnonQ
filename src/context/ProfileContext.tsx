@@ -28,7 +28,13 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         .eq('user_id', user.id)
         .single();
 
-      if (error) throw error;
+      // Gracefully handle profile not found (PGRST116) by returning null
+      // For other errors, re-throw them to be handled by the caller
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        throw error;
+      }
+
       return data;
     },
     enabled: !!user,
