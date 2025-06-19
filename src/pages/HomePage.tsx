@@ -1,7 +1,6 @@
 import React from 'react';
 import { MessageCircle, Users, Shield, Link as LinkIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { AuthForm } from '../components/AuthForm';
 
 export const HomePage: React.FC = () => {
   const { user, loading } = useAuth();
@@ -129,9 +128,6 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="max-w-md mx-auto">
-            <AuthForm />
-          </div>
 
           <div className="mt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-black mb-8 p-4 border-6 shadow-[6px_6px_0px_0px_#000] transform rotate-1 uppercase text-black dark:text-white bg-green-400 dark:bg-green-600 border-black dark:border-white">
