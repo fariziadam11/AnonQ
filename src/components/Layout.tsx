@@ -65,6 +65,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       activeClass: "bg-neoAccent2 text-neoDark",
       inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
     },
+    ...(profile?.role === 'admin' ? [{
+      to: "/users",
+      label: "User List",
+      icon: User,
+      active: location.pathname === "/users",
+      activeClass: "bg-neoAccent3 text-neoDark",
+      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent3/40",
+    }] : []),
   ] : [];
 
   return (

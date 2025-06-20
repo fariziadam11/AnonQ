@@ -43,6 +43,7 @@ export type Database = {
           updated_at: string;
           avatar?: string | null;
           is_deleted?: boolean;
+          role: string;
         };
         Insert: {
           id?: string;
@@ -52,6 +53,7 @@ export type Database = {
           updated_at?: string;
           avatar?: string | null;
           is_deleted?: boolean;
+          role?: string;
         };
         Update: {
           id?: string;
@@ -61,6 +63,7 @@ export type Database = {
           updated_at?: string;
           avatar?: string | null;
           is_deleted?: boolean;
+          role?: string;
         };
       };
       messages: {

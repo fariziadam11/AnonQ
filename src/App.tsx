@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -11,12 +11,12 @@ import { HomePage } from './pages/HomePage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import UserListPage from './pages/UserListPage';
-import { useAuth } from './context/AuthContext';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfileSettingsPage from './pages/ProfileSettingsPage';
 import PopularProfilesPage from './pages/PopularProfilesPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -29,20 +29,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
-
-  return user ? <>{children}</> : <Navigate to="/" replace />;
-};
-
 const AppContent: React.FC = () => {
   return (
     <Router>
@@ -54,16 +40,23 @@ const AppContent: React.FC = () => {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['user', 'admin']}>
                 <DashboardPage />
               </ProtectedRoute>
             }
           />
           <Route path="/u/:username" element={<ProfilePage />} />
-          <Route path="/users" element={<UserListPage />} />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <UserListPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/popular" element={<PopularProfilesPage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
-          <Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} />
+          <Route path="/settings/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><ProfileSettingsPage /></ProtectedRoute>} />
         </Routes>
       </Layout>
       <Toaster
