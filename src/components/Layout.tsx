@@ -111,17 +111,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <span>Popular</span>
                   </Link>
                   <Link
-                    to={`/u/${profile.username}`}
-                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === `/u/${profile.username}`
-                        ? 'bg-neoAccent3 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent3/40'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Profile</span>
-                  </Link>
-                  <Link
                     to="/settings/profile"
                     className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
                       location.pathname === '/settings/profile'
