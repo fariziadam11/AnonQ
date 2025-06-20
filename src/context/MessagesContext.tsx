@@ -16,6 +16,14 @@ export interface Message {
   created_at: string;
 }
 
+// Tambahkan perhitungan statistik pesan
+type MessageStats = {
+  total_messages: number;
+  unread_messages: number;
+  messages_today: number;
+  messages_this_week: number;
+};
+
 interface MessagesContextType {
   messages: Message[];
   loading: boolean;
@@ -24,6 +32,9 @@ interface MessagesContextType {
   sendMessage: (profileId: string, content: string, messageType?: 'anonymous' | 'user_to_user') => Promise<any>;
   deleteMessage: (messageId: string) => Promise<void>;
   deleteMessages: (messageIds: string[]) => Promise<void>;
+  refreshMessages: () => void;
+  messageStats: MessageStats;
+  markAllAsRead: () => Promise<void>;
 }
 
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
@@ -209,6 +220,41 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }, [profile, queryClient]);
 
+  // Tambahkan fungsi refreshMessages
+  const refreshMessages = () => {
+    queryClient.invalidateQueries({ queryKey: ['messages', profile?.id] });
+    toast.success('Pesan berhasil diperbarui!');
+  };
+
+  // Tambahkan perhitungan statistik pesan
+  const messageStats: MessageStats = React.useMemo(() => {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    // Cari hari pertama minggu ini (Minggu)
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    const weekString = startOfWeek.toISOString().slice(0, 10);
+
+    return {
+      total_messages: messages.length,
+      unread_messages: messages.filter((msg) => !msg.is_read).length,
+      messages_today: messages.filter((msg) => msg.created_at.slice(0, 10) === today).length,
+      messages_this_week: messages.filter((msg) => msg.created_at.slice(0, 10) >= weekString).length,
+    };
+  }, [messages]);
+
+  // Tambahkan fungsi markAllAsRead
+  const markAllAsRead = async () => {
+    if (!profile) return;
+    const { error } = await supabase
+      .from('messages')
+      .update({ is_read: true })
+      .eq('profile_id', profile.id)
+      .eq('is_read', false);
+    if (error) throw error;
+    queryClient.invalidateQueries({ queryKey: ['messages', profile.id] });
+  };
+
   const value = {
     messages,
     loading: isLoading,
@@ -217,6 +263,9 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     sendMessage: (profileId: string, content: string, messageType?: 'anonymous' | 'user_to_user') => sendMessageMutation.mutateAsync({ profileId, content, messageType }),
     deleteMessage: deleteMessageMutation.mutateAsync,
     deleteMessages: deleteMessagesMutation.mutateAsync,
+    refreshMessages,
+    messageStats,
+    markAllAsRead,
   };
 
   return <MessagesContext.Provider value={value}>{children}</MessagesContext.Provider>;

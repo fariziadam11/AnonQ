@@ -115,20 +115,20 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       <div className="max-w-4xl mx-auto">
         {/* Profile Header */}
-        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8 mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-3 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-neoDark dark:text-white">
-                Welcome, <span className="text-neoAccent2 dark:text-neoAccent3">@{profile.username}</span>
+              <h1 className="text-xl sm:text-3xl font-extrabold text-neoDark dark:text-white">
+                Welcome, <span className="text-neoAccent2 dark:text-neoAccent3 break-all">@{profile.username}</span>
               </h1>
-              <p className="text-neoDark/70 dark:text-white/70 mt-1">
+              <p className="text-neoDark/70 dark:text-white/70 mt-1 text-sm sm:text-base">
                 Share your link to receive anonymous messages
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
               <button
                 onClick={() => setShowStats(!showStats)}
                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
@@ -146,44 +146,51 @@ export const DashboardPage: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 min-w-[44px] min-h-[44px] bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neoAccent"
                 >
                   <Share2 className="h-5 w-5" />
                   <span>Share</span>
                 </button>
                 {showShareMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white py-2 z-10">
-                    <button
-                      onClick={() => {
-                        shareToWhatsApp();
-                        setShowShareMenu(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-                    >
-                      <MessageSquare className="h-5 w-5" />
-                      <span>WhatsApp</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        shareToFacebook();
-                        setShowShareMenu(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-                    >
-                      <Facebook className="h-5 w-5" />
-                      <span>Facebook</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        shareToInstagram();
-                        setShowShareMenu(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-                    >
-                      <Instagram className="h-5 w-5" />
-                      <span>Instagram</span>
-                    </button>
-                  </div>
+                  <>
+                    {/* Backdrop for mobile, click to close */}
+                    <div
+                      className="fixed inset-0 z-30 sm:hidden"
+                      onClick={() => setShowShareMenu(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-[90vw] max-w-xs sm:w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white py-2 z-40">
+                      <button
+                        onClick={() => {
+                          shareToWhatsApp();
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
+                      >
+                        <MessageSquare className="h-5 w-5" />
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          shareToFacebook();
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
+                      >
+                        <Facebook className="h-5 w-5" />
+                        <span>Facebook</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          shareToInstagram();
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
+                      >
+                        <Instagram className="h-5 w-5" />
+                        <span>Instagram</span>
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -192,9 +199,9 @@ export const DashboardPage: React.FC = () => {
 
         {/* Statistics Panel */}
         {showStats && messageStats && (
-          <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8 mb-8">
-            <h2 className="text-2xl font-extrabold text-neoDark dark:text-white mb-6">Message Statistics</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-3 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-neoDark dark:text-white mb-4 sm:mb-6">Message Statistics</h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               <div className="text-center p-4 bg-neoAccent/20 dark:bg-neoAccent/30 rounded-neo border-2 border-neoDark dark:border-white">
                 <div className="text-2xl font-extrabold text-neoDark dark:text-white">{messageStats.total_messages}</div>
                 <div className="text-sm text-neoDark/70 dark:text-white/70">Total Messages</div>
@@ -216,11 +223,11 @@ export const DashboardPage: React.FC = () => {
         )}
 
         {/* Messages Section */}
-        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6">
-            <h2 className="text-2xl font-extrabold text-neoDark dark:text-white">Your Messages</h2>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <div className="flex gap-2">
+        <div className="bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-3 sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-neoDark dark:text-white">Your Messages</h2>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <button
                   onClick={refreshMessages}
                   className="p-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40"
@@ -238,7 +245,7 @@ export const DashboardPage: React.FC = () => {
                   </button>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => setFilter('all')}
                   className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
@@ -263,7 +270,7 @@ export const DashboardPage: React.FC = () => {
               <select
                 value={sort}
                 onChange={e => setSort(e.target.value as any)}
-                className="w-full sm:w-auto px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent"
+                className="w-full sm:w-auto px-3 py-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white font-bold shadow-neo focus:outline-none focus:ring-2 focus:ring-neoAccent text-sm"
                 style={{ minWidth: 120 }}
                 aria-label="Sort messages"
               >
@@ -276,17 +283,17 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {messagesLoading ? (
-            <div className="text-center py-12">
+            <div className="text-center py-8 sm:py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-4 border-neoAccent dark:border-neoAccent2 mx-auto mb-4"></div>
-              <p className="text-neoDark/70 dark:text-white/70">Loading messages...</p>
+              <p className="text-neoDark/70 dark:text-white/70 text-sm sm:text-base">Loading messages...</p>
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center py-12">
-              <MessageCircle className="h-16 w-16 text-neoDark/20 dark:text-white/20 mx-auto mb-4" />
-              <p className="text-xl text-neoDark dark:text-white mb-2">
+            <div className="text-center py-8 sm:py-12">
+              <MessageCircle className="h-12 w-12 sm:h-16 sm:w-16 text-neoDark/20 dark:text-white/20 mx-auto mb-4" />
+              <p className="text-base sm:text-xl text-neoDark dark:text-white mb-2">
                 {filter === 'unread' ? 'No unread messages' : 'No messages yet'}
               </p>
-              <p className="text-neoDark/50 dark:text-white/50">
+              <p className="text-neoDark/50 dark:text-white/50 text-sm sm:text-base">
                 {filter === 'unread'
                   ? 'All caught up! Check back later for new messages.'
                   : 'Share your link to start receiving anonymous messages!'}
@@ -299,19 +306,17 @@ export const DashboardPage: React.FC = () => {
                 onMarkAsRead={markAsRead}
                 onDeleteSelected={deleteMessages}
               />
-              
               {totalPages > 1 && (
-                <div className="mt-6 p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-sm text-neoDark/70 dark:text-white/70">
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white overflow-x-auto">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
+                    <p className="text-xs sm:text-sm text-neoDark/70 dark:text-white/70">
                       Showing {paginatedMessages.length} of {sortedMessages.length} messages
                     </p>
-                    <p className="text-sm text-neoDark/70 dark:text-white/70">
+                    <p className="text-xs sm:text-sm text-neoDark/70 dark:text-white/70">
                       Page {currentPage} of {totalPages}
                     </p>
                   </div>
-                  
-                  <div className="flex justify-center items-center gap-2">
+                  <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-2">
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}

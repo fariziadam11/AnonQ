@@ -143,11 +143,11 @@ export const MessageCard: React.FC<MessageCardProps> = ({
     <>
       <div
         id={`message-card-${message.id}`}
-        className={`bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-4 sm:p-6 lg:p-8 transition-all duration-200 ${
+        className={`bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-4 border-neoDark dark:border-white p-3 sm:p-4 lg:p-8 transition-all duration-200 ${
           isSelected ? 'ring-4 ring-neoAccent2 dark:ring-neoAccent3' : ''
-        } ${!message.is_read ? 'border-neoAccent2 dark:border-neoAccent3' : ''}`}
+        } ${!message.is_read ? 'border-neoAccent2 dark:border-neoAccent3' : ''} w-full break-words`}
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           {isSelectionMode && onSelect && (
             <div className="flex justify-end checkbox-container">
               <button
@@ -168,48 +168,34 @@ export const MessageCard: React.FC<MessageCardProps> = ({
           )}
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-neoAccent2 dark:bg-neoAccent3 flex items-center justify-center flex-shrink-0">
+            <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neoAccent2 dark:bg-neoAccent3 flex items-center justify-center flex-shrink-0">
                 <User className="h-5 w-5 text-white dark:text-neoDark" />
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-neoDark dark:text-white">
-                    {message.message_type === 'user_to_user' ? (
-                      <>
-                        User Message
-                        {message.sender_profile_id && (
-                          <span className="ml-2 text-xs text-neoAccent2 dark:text-neoAccent3">from you</span>
-                        )}
-                      </>
-                    ) : (
-                      'Anonymous'
-                    )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                  <span className="font-bold text-neoDark dark:text-white text-sm sm:text-base">
+                    {message.message_type === 'anonymous' ? 'Anonymous' : 'User-to-User'}
                   </span>
-                  {!message.is_read && (
-                    <span className="px-2 py-1 text-xs font-bold bg-neoAccent2 text-white rounded-neo">
-                      NEW
-                    </span>
-                  )}
                 </div>
-                <span className="text-sm text-neoDark/70 dark:text-white/70 hide-in-image">
+                <span className="text-xs sm:text-sm text-neoDark/70 dark:text-white/70 hide-in-image">
                   {formatDate(message.created_at)}
                 </span>
               </div>
             </div>
             
-            <div className="bg-neoBg dark:bg-neoDark/50 rounded-neo p-4 border-2 border-neoDark/10 dark:border-white/10">
-              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words leading-relaxed">
+            <div className="bg-neoBg dark:bg-neoDark/50 rounded-neo p-3 sm:p-4 border-2 border-neoDark/10 dark:border-white/10">
+              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words leading-relaxed text-sm sm:text-base">
                 {message.content}
               </p>
             </div>
             
-            <div className="flex flex-wrap items-center justify-between gap-2 mt-4">
-              <div className="flex items-center gap-2 text-sm text-neoDark/50 dark:text-white/50 hide-in-image">
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-3 sm:mt-4">
+              <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neoDark/50 dark:text-white/50 hide-in-image">
                 <Clock className="h-4 w-4" />
                 <span>{new Date(message.created_at).toLocaleString()}</span>
               </div>
-              <div className="flex items-center gap-2 action-buttons">
+              <div className="flex items-center gap-1 sm:gap-2 action-buttons">
                 <button
                   onClick={() => setShowPreview(true)}
                   className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
