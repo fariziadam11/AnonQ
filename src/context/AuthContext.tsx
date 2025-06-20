@@ -60,7 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+      if (profileError) throw profileError;
       if (!profile) {
         // Try to get username from localStorage (set during sign up)
         let username = localStorage.getItem('pending_username') || '';
