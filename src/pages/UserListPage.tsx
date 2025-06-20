@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages } from '../context/MessagesContext';
@@ -22,6 +22,7 @@ const UserListPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSending, setIsSending] = useState(false);
   const usersPerPage = 9; // 3x3 grid
   const { profile: currentProfile } = useProfile();
   const { sendMessage } = useMessages();
@@ -89,34 +90,29 @@ const UserListPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Send message mutation
-  const sendMessageMutation = useMutation({
-    mutationFn: async ({ profileId, content }: { profileId: string; content: string }) => {
-      if (!currentProfile) throw new Error('No profile found');
-      return sendMessage(profileId, content);
-    },
-    onSuccess: () => {
-      toast.success('Pesan berhasil dikirim!');
-      setMessage('');
-      setSelectedUser(null);
-    },
-    onError: (error: any) => {
-      console.error('Error sending message:', error);
-      if (error.message === 'No profile found') {
-        toast.error('Anda harus login untuk mengirim pesan');
-      } else {
-        toast.error('Gagal mengirim pesan. Silakan coba lagi.');
-      }
-    },
-  });
-
   const handleSend = async () => {
     if (!selectedUser || !message.trim()) return;
     if (!currentProfile) {
       toast.error('Anda harus login untuk mengirim pesan');
       return;
     }
-    sendMessageMutation.mutate({ profileId: selectedUser.id, content: message });
+
+    setIsSending(true);
+    try {
+      await sendMessage(selectedUser.id, message, 'user_to_user');
+      toast.success('Pesan berhasil dikirim!');
+      setMessage('');
+      setSelectedUser(null);
+    } catch (error: any) {
+      console.error('Error sending message:', error);
+      if (error.message === 'No profile found') {
+        toast.error('Anda harus login untuk mengirim pesan');
+      } else {
+        toast.error('Gagal mengirim pesan. Silakan coba lagi.');
+      }
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (isLoading) {
@@ -274,10 +270,10 @@ const UserListPage: React.FC = () => {
           <div className="flex gap-4">
             <button
               onClick={handleSend}
-              disabled={!message.trim() || sendMessageMutation.isPending}
+              disabled={!message.trim() || isSending}
               className="flex-1 bg-neoAccent2 text-white py-3 px-4 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-extrabold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {sendMessageMutation.isPending ? 'Mengirim...' : 'Kirim Pesan'}
+              {isSending ? 'Mengirim...' : 'Kirim Pesan'}
             </button>
             <button
               onClick={() => setSelectedUser(null)}
