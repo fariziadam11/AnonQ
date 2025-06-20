@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { useProfile } from '../context/ProfileContext';
-import { useMessages } from '../context/MessagesContext';
+import { supabase } from '../../lib/supabase';
+import { useProfile } from '../../context/ProfileContext';
+import { useMessages } from '../../context/MessagesContext';
 import { MessageCircle, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 

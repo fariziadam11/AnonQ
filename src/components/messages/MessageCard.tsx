@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Clock, CheckCheck, Trash2, CheckSquare, Square, Download, Eye, X, User } from 'lucide-react';
-import { Database } from '../lib/supabase';
-import { useMessages } from '../context/MessagesContext';
+import { Database } from '../../lib/supabase';
+import { useMessages } from '../../context/MessagesContext';
 import html2canvas from 'html2canvas';
 import { toast } from 'react-hot-toast';
 

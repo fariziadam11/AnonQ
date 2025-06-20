@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { validateUsername } from '../lib/supabase';
+import { validateUsername } from '../../lib/supabase';
 
 interface AuthFormProps {
   onSuccess?: () => void;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight, BarChart3, CheckCheck, RefreshCw } from 'lucide-react';
-import { useProfile } from '../context/ProfileContext';
-import { useMessages } from '../context/MessagesContext';
-import { MessageList } from '../components/MessageList';
+import { useProfile } from '../../context/ProfileContext';
+import { useMessages } from '../../context/MessagesContext';
+import { MessageList } from '../../components/messages/MessageList';
 import toast from 'react-hot-toast';
 
 export const DashboardPage: React.FC = () => {

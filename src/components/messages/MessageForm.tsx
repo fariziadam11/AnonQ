@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Send, MessageCircle } from 'lucide-react';
-import { useMessages } from '../context/MessagesContext';
+import { useMessages } from '../../context/MessagesContext';
 import toast from 'react-hot-toast';
 
 interface MessageFormProps {

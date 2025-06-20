@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useProfile } from '../context/ProfileContext';
-import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
+import { useAuth } from '../../context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 

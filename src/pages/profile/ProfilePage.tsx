@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MessageCircle, User, ExternalLink } from 'lucide-react';
-import { useProfile } from '../context/ProfileContext';
-import { MessageForm } from '../components/MessageForm';
-import { Database } from '../lib/supabase';
+import { useProfile } from '../../context/ProfileContext';
+import { MessageForm } from '../../components/messages/MessageForm';
+import { Database } from '../../lib/supabase';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 

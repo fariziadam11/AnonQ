@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MessageCircle, User, LogOut, Moon, Sun } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useProfile } from '../context/ProfileContext';
-import { useMessages } from '../context/MessagesContext';
+import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
+import { useMessages } from '../../context/MessagesContext';
 
 interface LayoutProps {
   children: React.ReactNode;

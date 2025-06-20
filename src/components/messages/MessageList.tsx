@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MessageCard } from './MessageCard';
-import { Database } from '../lib/supabase';
+import { Database } from '../../lib/supabase';
 import { CheckSquare, X } from 'lucide-react';
 
 type Message = Database['public']['Tables']['messages']['Row'];
