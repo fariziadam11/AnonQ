@@ -39,6 +39,34 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   };
 
+  const menuItems = user && profile ? [
+    {
+      to: "/dashboard",
+      label: "Messages",
+      icon: MessageCircle,
+      active: location.pathname === "/dashboard",
+      activeClass: "bg-neoAccent text-neoDark",
+      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent/40",
+      showUnread: true,
+    },
+    {
+      to: "/popular",
+      label: "Popular",
+      icon: User,
+      active: location.pathname === "/popular",
+      activeClass: "bg-yellow-300 text-neoDark",
+      inactiveClass: "bg-white text-neoDark hover:bg-yellow-200",
+    },
+    {
+      to: "/settings/profile",
+      label: "Profile Settings",
+      icon: User,
+      active: location.pathname === "/settings/profile",
+      activeClass: "bg-neoAccent2 text-neoDark",
+      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
+    },
+  ] : [];
+
   return (
     <div className="min-h-screen bg-neoBg dark:bg-neoDark">
       <nav className="bg-white dark:bg-neoDark rounded-b-neo shadow-neo-lg border-b-4 border-neoDark dark:border-white sticky top-0 z-50">
@@ -72,55 +100,21 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </button>
               {user && profile ? (
                 <>
-                  <Link
-                    to="/dashboard"
-                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/dashboard'
-                        ? 'bg-neoAccent text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent/40'
-                    }`}
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    <span>Messages</span>
-                    {unreadCount > 0 && (
-                      <span className="bg-neoAccent2 text-white text-xs rounded-neo px-2 py-1 min-w-[20px] h-5 flex items-center justify-center border-2 border-neoDark shadow-neo">
-                        {unreadCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link
-                    to="/users"
-                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/users'
-                        ? 'bg-neoAccent3 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent3/40'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>User List</span>
-                  </Link>
-                  <Link
-                    to="/popular"
-                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/popular'
-                        ? 'bg-yellow-300 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-yellow-200'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Popular</span>
-                  </Link>
-                  <Link
-                    to="/settings/profile"
-                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/settings/profile'
-                        ? 'bg-neoAccent2 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent2/40'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Profile Settings</span>
-                  </Link>
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${item.active ? item.activeClass : item.inactiveClass}`}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                      {item.showUnread && unreadCount > 0 && (
+                        <span className="bg-neoAccent2 text-white text-xs rounded-neo px-2 py-1 min-w-[20px] h-5 flex items-center justify-center border-2 border-neoDark shadow-neo">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
                   <button
                     onClick={handleSignOut}
                     className="flex items-center space-x-2 px-3 sm:px-4 py-2 text-neoDark bg-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent2 hover:text-white transition-all duration-200"
@@ -159,59 +153,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </button>
               {user && profile ? (
                 <>
-                  <Link
-                    to="/dashboard"
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/dashboard'
-                        ? 'bg-neoAccent text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent/40'
-                    }`}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    <span>Messages</span>
-                    {unreadCount > 0 && (
-                      <span className="bg-neoAccent2 text-white text-xs rounded-neo px-2 py-1 min-w-[20px] h-5 flex items-center justify-center border-2 border-neoDark shadow-neo">
-                        {unreadCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link
-                    to="/users"
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/users'
-                        ? 'bg-neoAccent3 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent3/40'
-                    }`}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>User List</span>
-                  </Link>
-                  <Link
-                    to="/popular"
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/popular'
-                        ? 'bg-yellow-300 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-yellow-200'
-                    }`}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Popular</span>
-                  </Link>
-                  <Link
-                    to="/settings/profile"
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
-                      location.pathname === '/settings/profile'
-                        ? 'bg-neoAccent2 text-neoDark'
-                        : 'bg-white text-neoDark hover:bg-neoAccent2/40'
-                    }`}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <User className="h-5 w-5" />
-                    <span>Profile Settings</span>
-                  </Link>
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${item.active ? item.activeClass : item.inactiveClass}`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                      {item.showUnread && unreadCount > 0 && (
+                        <span className="bg-neoAccent2 text-white text-xs rounded-neo px-2 py-1 min-w-[20px] h-5 flex items-center justify-center border-2 border-neoDark shadow-neo">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
                   <button
                     onClick={() => { setMenuOpen(false); handleSignOut(); }}
                     className="flex items-center space-x-2 px-4 py-2 text-neoDark bg-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent2 hover:text-white transition-all duration-200"
