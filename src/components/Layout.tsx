@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MessageCircle, User, Home, LogOut, Moon, Sun } from 'lucide-react';
+import { MessageCircle, User, LogOut, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import { useMessages } from '../context/MessagesContext';
@@ -244,14 +244,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/"
-                  className="flex items-center space-x-2 px-4 py-2 bg-neoAccent2 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <Home className="h-5 w-5" />
-                  <span>Get Started</span>
-                </Link>
+                <>
+                  <button
+                    onClick={() => { setMenuOpen(false); window.location.href = '/login'; }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-neoAccent2 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent3 hover:text-neoDark transition-all duration-200"
+                  >
+                    <span>Login</span>
+                  </button>
+                  <button
+                    onClick={() => { setMenuOpen(false); window.location.href = '/register'; }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-neoAccent3 text-white rounded-neo border-2 border-neoDark shadow-neo font-bold hover:bg-neoAccent2 hover:text-neoDark transition-all duration-200"
+                  >
+                    <span>Register</span>
+                  </button>
+                </>
               )}
             </div>
           )}
