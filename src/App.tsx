@@ -6,18 +6,18 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './context/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
 import { MessagesProvider } from './context/MessagesContext';
-import { Layout } from './components/Layout';
+import { Layout } from './components/layout/Layout';
 import { HomePage } from './pages/HomePage';
-import { DashboardPage } from './pages/DashboardPage';
-import { ProfilePage } from './pages/ProfilePage';
-import UserListPage from './pages/UserListPage';
-import EmailVerificationPage from './pages/EmailVerificationPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ProfileSettingsPage from './pages/ProfileSettingsPage';
-import PopularProfilesPage from './pages/PopularProfilesPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import { DashboardPage } from './pages/dashboard/DashboardPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
+import UserListPage from './pages/dashboard/UserListPage';
+import EmailVerificationPage from './pages/auth/EmailVerificationPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ProfileSettingsPage from './pages/profile/ProfileSettingsPage';
+import PopularProfilesPage from './pages/dashboard/PopularProfilesPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 // Create a client
 const queryClient = new QueryClient({
