@@ -41,6 +41,8 @@ export type Database = {
           username: string;
           created_at: string;
           updated_at: string;
+          avatar?: string | null;
+          is_deleted?: boolean;
         };
         Insert: {
           id?: string;
@@ -48,6 +50,8 @@ export type Database = {
           username: string;
           created_at?: string;
           updated_at?: string;
+          avatar?: string | null;
+          is_deleted?: boolean;
         };
         Update: {
           id?: string;
@@ -55,6 +59,8 @@ export type Database = {
           username?: string;
           created_at?: string;
           updated_at?: string;
+          avatar?: string | null;
+          is_deleted?: boolean;
         };
       };
       messages: {
@@ -92,3 +98,10 @@ export type Database = {
     };
   };
 };
+
+// Utility: validate username via Supabase RPC
+export async function validateUsername(username: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('is_valid_username', { username_param: username });
+  if (error) throw error;
+  return !!data;
+}

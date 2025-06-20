@@ -15,6 +15,8 @@ import { useAuth } from './context/AuthContext';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfileSettingsPage from './pages/ProfileSettingsPage';
+import PopularProfilesPage from './pages/PopularProfilesPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -59,7 +61,9 @@ const AppContent: React.FC = () => {
           />
           <Route path="/u/:username" element={<ProfilePage />} />
           <Route path="/users" element={<UserListPage />} />
+          <Route path="/popular" element={<PopularProfilesPage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
+          <Route path="/settings/profile" element={<ProtectedRoute><ProfileSettingsPage /></ProtectedRoute>} />
         </Routes>
       </Layout>
       <Toaster

@@ -9,6 +9,7 @@ interface ProfileContextType {
   profile: Profile | null;
   loading: boolean;
   getProfileByUsername: (username: string) => Promise<Profile | null>;
+  uploadProfileImage: (file: File) => Promise<string | null>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -58,6 +59,21 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return data;
   };
 
+  // Fungsi upload gambar profil
+  const uploadProfileImage = async (file: File) => {
+    if (!user) throw new Error('Not authenticated');
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${user.id}.${fileExt}`;
+    const { error } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+    if (error) throw error;
+    // Dapatkan public URL
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+    // Update kolom avatar di profiles
+    const { error: updateError } = await supabase.from('profiles').update({ avatar: data.publicUrl }).eq('user_id', user.id);
+    if (updateError) throw updateError;
+    return data.publicUrl;
+  };
+
   // Set up real-time subscription for profile updates
   React.useEffect(() => {
     if (!user) return;
@@ -87,6 +103,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     profile,
     loading: isLoading,
     getProfileByUsername,
+    uploadProfileImage,
   };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

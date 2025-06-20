@@ -8,6 +8,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, username: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
+  updatePassword: (params: { oldPassword: string; newPassword: string }) => Promise<void>;
+  deleteUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -84,12 +86,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
+  const updatePassword = async ({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) => {
+    if (!user) throw new Error('Not authenticated');
+    const email = user.email;
+    if (!email) throw new Error('No email found');
+    // Re-authenticate user
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: oldPassword });
+    if (signInError) throw new Error('Current password is incorrect.');
+    // Update password
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  };
+
+  const deleteUser = async () => {
+    if (!user) throw new Error('Not authenticated');
+    // Soft delete: update is_deleted = true
+    const { error } = await supabase.from('profiles').update({ is_deleted: true }).eq('user_id', user.id);
+    if (error) throw error;
+  };
+
   const value = {
     user,
     loading,
     signUp,
     signIn,
     signOut,
+    updatePassword,
+    deleteUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

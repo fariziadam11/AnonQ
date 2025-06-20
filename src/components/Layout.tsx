@@ -100,6 +100,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <span>User List</span>
                   </Link>
                   <Link
+                    to="/popular"
+                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/popular'
+                        ? 'bg-yellow-300 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-yellow-200'
+                    }`}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Popular</span>
+                  </Link>
+                  <Link
                     to={`/u/${profile.username}`}
                     className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
                       location.pathname === `/u/${profile.username}`
@@ -108,7 +119,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     }`}
                   >
                     <User className="h-5 w-5" />
-                    <span>My Page</span>
+                    <span>Profile</span>
+                  </Link>
+                  <Link
+                    to="/settings/profile"
+                    className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/settings/profile'
+                        ? 'bg-neoAccent2 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-neoAccent2/40'
+                    }`}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Profile Settings</span>
                   </Link>
                   <button
                     onClick={handleSignOut}
@@ -178,6 +200,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <span>User List</span>
                   </Link>
                   <Link
+                    to="/popular"
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/popular'
+                        ? 'bg-yellow-300 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-yellow-200'
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Popular</span>
+                  </Link>
+                  <Link
                     to={`/u/${profile.username}`}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
                       location.pathname === `/u/${profile.username}`
@@ -187,7 +221,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     onClick={() => setMenuOpen(false)}
                   >
                     <User className="h-5 w-5" />
-                    <span>My Page</span>
+                    <span>Profile</span>
+                  </Link>
+                  <Link
+                    to="/settings/profile"
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-neo border-2 border-neoDark shadow-neo font-bold transition-all duration-200 ${
+                      location.pathname === '/settings/profile'
+                        ? 'bg-neoAccent2 text-neoDark'
+                        : 'bg-white text-neoDark hover:bg-neoAccent2/40'
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Profile Settings</span>
                   </Link>
                   <button
                     onClick={() => { setMenuOpen(false); handleSignOut(); }}

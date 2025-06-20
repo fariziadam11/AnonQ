@@ -3,6 +3,7 @@ import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { validateUsername } from '../lib/supabase';
 
 interface AuthFormProps {
   onSuccess?: () => void;
@@ -39,6 +40,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
         // Check if username contains only valid characters
         if (!/^[a-zA-Z0-9_-]+$/.test(formData.username)) {
           toast.error('Username can only contain letters, numbers, hyphens, and underscores');
+          return;
+        }
+
+        // Backend validation (Supabase RPC)
+        const isValid = await validateUsername(formData.username);
+        if (!isValid) {
+          toast.error('Username is not valid (must be 3-50 chars, only a-z, A-Z, 0-9, _ )');
           return;
         }
 

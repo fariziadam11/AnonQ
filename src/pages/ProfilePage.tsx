@@ -74,10 +74,19 @@ export const ProfilePage: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         {/* Profile Header */}
         <div className="text-center mb-8">
-          <div className="w-24 h-24 bg-neoAccent rounded-neo flex items-center justify-center mx-auto mb-4 border-4 border-neoDark dark:border-white">
-            <span className="text-3xl font-extrabold text-neoDark dark:text-white">
-              {profile.username.charAt(0).toUpperCase()}
-            </span>
+          <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-neoDark dark:border-white bg-neoAccent overflow-hidden">
+            {profile.avatar ? (
+              <img
+                src={profile.avatar}
+                alt={profile.username + ' avatar'}
+                className="w-full h-full object-cover"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            ) : (
+              <span className="text-3xl font-extrabold text-neoDark dark:text-white">
+                {profile.username.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           <h1 className="text-4xl font-extrabold text-neoDark dark:text-white mb-2 drop-shadow-sm">
             @{profile.username}
