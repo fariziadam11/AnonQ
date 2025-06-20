@@ -1,47 +1,47 @@
-# AnonQ – Platform Q&A Anonim
+# AnonQ – Anonymous Q&A Platform
 
-**AnonQ** adalah platform tanya jawab anonim yang memungkinkan siapa saja untuk menerima pesan, pertanyaan, atau feedback secara anonim dari teman, followers, atau siapa pun. Cocok untuk berbagi link di media sosial, mendapatkan masukan jujur, atau sekadar seru-seruan bersama teman.
+**AnonQ** is an anonymous question-and-answer platform that allows anyone to receive messages, questions, or feedback anonymously from friends, followers, or anyone else. It is suitable for sharing links on social media, getting honest feedback, or just having fun with friends.
 
-## Fitur Utama
-- **Tanya Jawab Anonim:** Siapa pun bisa mengirim pesan tanpa harus login.
-- **Dashboard Pribadi:** Pengguna dapat melihat, menandai, dan mengelola pesan yang masuk.
-- **Link Unik:** Setiap pengguna mendapatkan link profil unik untuk dibagikan.
-- **Realtime Update:** Pesan masuk langsung muncul di dashboard tanpa perlu refresh.
-- **Privasi Terjaga:** Identitas pengirim benar-benar anonim.
+## Key Features
+- **Anonymous Q&A:** Anyone can send messages without logging in.
+- **Personal Dashboard:** Users can view, mark, and manage incoming messages.
+- **Unique Link:** Each user receives a unique profile link to share.
+- **Real-time Updates:** Incoming messages appear directly on the dashboard without needing to refresh.
+- **Privacy Protected:** The sender's identity is completely anonymous.
 
-## Teknologi
-- **React + TypeScript** untuk frontend
-- **Supabase** untuk autentikasi, database, dan realtime
-- **TailwindCSS** untuk styling modern dan responsif
-- **Vite** untuk build
+## Technology
+- **React + TypeScript** for frontend
+- **Supabase** for authentication, database, and real-time
+- **TailwindCSS** for modern and responsive styling
+- **Vite** for build
 
-## Cara Install & Jalankan Lokal
+## How to Install & Run Locally
 
-1. **Clone repo ini**
-   ```bash
-   git clone <repo-url-anda>
+1. **Clone this repo**
+```bash
+   git clone <your-repo-url>
    cd ngl
    ```
 2. **Install dependencies**
    ```bash
    npm install
    ```
-3. **Buat file `.env` di root** dan isi:
+3. **Create a `.env` file in the root directory** and fill it with:
    ```
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
-4. **Jalankan aplikasi**
+4. **Run the application**
    ```bash
    npm run dev
    ```
-5. **Akses di browser**
-   - Buka [http://localhost:5173](http://localhost:5173)
+5. **Access in browser**
+   - Open [http://localhost:5173](http://localhost:5173)
 
-## Deploy ke Netlify
+## Deploy to Netlify
 
-1. **Fork/Clone repo ini**
-2. **Buat file `.env` di root** dan isi:
+1. **Fork/Clone this repo**
+2. **Create a `.env` file in the root** and fill it with:
    ```
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -54,51 +54,51 @@
    ```
    dist
    ```
-5. **Tambahkan file `netlify.toml`** (sudah tersedia) agar routing SPA berjalan lancar.
-6. **Deploy di Netlify** (bisa drag & drop folder dist, atau connect ke repo dan deploy otomatis)
+5. **Add the `netlify.toml` file** (already available) to ensure smooth SPA routing.
+6. **Deploy to Netlify** (you can drag and drop the dist folder, or connect to the repository and deploy automatically)
 
-## Redirects (penting untuk SPA)
-Sudah diatur di `netlify.toml`:
+## Redirects (important for SPA)
+Already set up in `netlify.toml`:
 ```
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = “/*”
+  to = “/index.html”
   status = 200
 ```
 
-## Cara Kontribusi
+## How to Contribute
 
-1. **Fork repo ini** ke akun GitHub kamu.
-2. **Clone hasil fork** ke komputer lokal:
-   ```bash
-   git clone <url-fork-anda>
+1. **Fork this repository** to your GitHub account.
+2. **Clone the fork** to your local computer:
+```bash
+   git clone <your-fork-url>
    cd ngl
    ```
-3. **Buat branch baru** untuk fitur atau perbaikan:
+3. **Create a new branch** for the feature or fix:
    ```bash
-   git checkout -b nama-fitur-anda
+   git checkout -b your-feature-name
    ```
-4. **Lakukan perubahan & commit**
+4. **Make changes & commit**
    ```bash
    git add .
-   git commit -m "deskripsi perubahan"
+   git commit -m “description of changes”
    ```
-5. **Push branch ke repo fork**
+5. **Push the branch to the fork repo**
    ```bash
-   git push origin nama-fitur-anda
+   git push origin your-feature-name
    ```
-6. **Buka Pull Request** ke repo utama.
-7. Tunggu review dan diskusi dari maintainer.
+6. **Open a Pull Request** to the main repo.
+7. Wait for review and discussion from the maintainer.
 
-Kontribusi berupa fitur baru, perbaikan bug, dokumentasi, atau saran sangat diterima!
-
----
-
-**Cocok untuk siapa?**  
-- Ingin menerima feedback jujur secara anonim  
-- Seru-seruan Q&A di media sosial  
-- Membuka sesi tanya jawab tanpa takut identitas bocor
+Contributions in the form of new features, bug fixes, documentation, or suggestions are greatly appreciated!
 
 ---
 
-> **Mulai sekarang, dapatkan pertanyaan dan pesan anonim dengan mudah dan aman!**
+**Who is this for?**  
+- Want to receive honest feedback anonymously  
+- Fun Q&A sessions on social media  
+- Host Q&A sessions without fear of identity leaks
+
+---
+
+> **Starting now, get anonymous questions and messages easily and securely!**
