@@ -156,6 +156,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
           >
             {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
+          {isLogin && (
+            <div className="mt-4 text-center">
+              <a href="/forgot-password" className="text-neoAccent2 hover:underline font-bold">Forgot Password?</a>
+            </div>
+          )}
         </form>
 
         {!mode && (

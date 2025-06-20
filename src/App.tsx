@@ -17,6 +17,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProfileSettingsPage from './pages/ProfileSettingsPage';
 import PopularProfilesPage from './pages/PopularProfilesPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -57,6 +58,7 @@ const AppContent: React.FC = () => {
           <Route path="/popular" element={<PopularProfilesPage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/settings/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><ProfileSettingsPage /></ProtectedRoute>} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Routes>
       </Layout>
       <Toaster
