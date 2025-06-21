@@ -82,7 +82,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: Home,
       active: location.pathname === "/",
       activeClass: "bg-neoAccent text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent/40",
     },
     {
       to: "/dashboard",
@@ -90,7 +89,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: MessageCircle,
       active: location.pathname === "/dashboard",
       activeClass: "bg-neoAccent2 text-white",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
       showUnread: true,
     },
     {
@@ -99,7 +97,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: TrendingUp,
       active: location.pathname === "/popular",
       activeClass: "bg-neoAccent3 text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent3/40",
     },
     {
       to: "/settings/profile",
@@ -107,7 +104,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: Settings,
       active: location.pathname === "/settings/profile",
       activeClass: "bg-neoAccent text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent/40",
     },
     ...(profile?.role === 'admin' ? [{
       to: "/users",
@@ -115,7 +111,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: Users,
       active: location.pathname === "/users",
       activeClass: "bg-neoAccent3 text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent3/40",
     }] : []),
   ] : [
     {
@@ -124,7 +119,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: Home,
       active: location.pathname === "/",
       activeClass: "bg-neoAccent text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent/40",
     },
     {
       to: "/login",
@@ -132,7 +126,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: User,
       active: location.pathname === "/login",
       activeClass: "bg-neoAccent2 text-white",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
     },
     {
       to: "/register",
@@ -140,7 +133,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: User,
       active: location.pathname === "/register",
       activeClass: "bg-neoAccent3 text-neoDark",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent3/40",
     },
     {
       to: "/sidebar-demo",
@@ -148,7 +140,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       icon: Star,
       active: location.pathname === "/sidebar-demo",
       activeClass: "bg-neoAccent2 text-white",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
     },
   ];
 
@@ -215,8 +206,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               to={item.to}
               className={`
                 flex items-center space-x-3 px-3 py-3 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 sidebar-item-hover
-                ${item.active ? item.activeClass : item.inactiveClass}
                 ${isCollapsed ? 'justify-center' : ''}
+                ${item.active ? item.activeClass : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent/40'}
               `}
               onClick={() => {
                 if (window.innerWidth < 768) {
