@@ -8,9 +8,9 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-neoBg dark:bg-neoDark">
-      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col min-w-0">
-        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        <Navbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-grow">
           <Outlet />
         </main>
