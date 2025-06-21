@@ -30,7 +30,7 @@ const fetchPopularProfiles = async (period: 'total' | 'weekly' | 'monthly') => {
 
 const fetchStats = async () => {
   // Total user dan total pesan
-  const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_deleted', false);
+  const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
   const { count: messageCount } = await supabase.from('messages').select('*', { count: 'exact', head: true });
   return { userCount: userCount || 0, messageCount: messageCount || 0 };
 };
