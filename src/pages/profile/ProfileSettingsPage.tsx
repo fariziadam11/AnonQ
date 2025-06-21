@@ -22,7 +22,7 @@ export const ProfileSettingsPage: React.FC = () => {
 
   if (!user || !profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-yellow-300 dark:bg-gray-900">
+      <div className="flex items-center justify-center py-8">
         <div className="text-center border-8 border-black rounded-3xl p-8 bg-white dark:bg-gray-800 shadow-[8px_8px_0px_0px_#000]">
           <h1 className="text-3xl font-black mb-2 text-red-500">Unauthorized</h1>
           <p className="text-gray-700 dark:text-gray-200 font-bold">You must be logged in to access profile settings.</p>
@@ -32,7 +32,7 @@ export const ProfileSettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-yellow-300 dark:bg-gray-900">
+    <div className="flex items-center justify-center py-8">
       <div className="w-full max-w-lg mx-auto border-8 border-black rounded-3xl p-8 bg-white dark:bg-gray-800 shadow-[12px_12px_0px_0px_#000]">
         <h2 className="text-3xl font-black mb-8 text-center text-purple-700 dark:text-yellow-300 drop-shadow-[2px_2px_0px_#000]">Profile Settings</h2>
         {/* Avatar Preview */}

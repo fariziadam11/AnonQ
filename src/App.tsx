@@ -18,6 +18,7 @@ import ProfileSettingsPage from './pages/profile/ProfileSettingsPage';
 import PopularProfilesPage from './pages/dashboard/PopularProfilesPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import { SidebarDemoPage } from './pages/SidebarDemoPage';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/demo" element={<SidebarDemoPage />} />
           <Route
             path="/dashboard"
             element={

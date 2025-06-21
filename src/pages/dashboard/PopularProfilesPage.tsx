@@ -78,7 +78,7 @@ const PopularProfilesPage: React.FC = () => {
   } : undefined;
 
   return (
-    <div className="min-h-screen bg-yellow-300 dark:bg-gray-900 py-10 px-2">
+    <div className="py-10 px-2">
       <div className="max-w-3xl mx-auto border-8 border-black rounded-3xl bg-white dark:bg-gray-800 shadow-[12px_12px_0px_0px_#000] p-2 sm:p-4 md:p-6">
         <h1 className="text-3xl font-black text-center mb-8 text-purple-700 dark:text-yellow-300 drop-shadow-[2px_2px_0px_#000]">Popular Profiles</h1>
         {/* Statistik summary */}

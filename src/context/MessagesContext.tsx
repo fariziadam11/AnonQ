@@ -120,16 +120,17 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             sender_profile_id: null,
           };
           console.log('Insert anonymous:', { insertData });
-          const { data, error } = await supabase
+          // For anonymous messages, we don't use .select() because the anon role
+          // does not have SELECT permissions, which would cause the entire query to fail.
+          const { error } = await supabase
             .from('messages')
-            .insert(insertData)
-            .select()
-            .single();
+            .insert(insertData);
+            
           if (error) {
             console.error('Supabase error:', error);
             throw error;
           }
-          return data;
+          return null; // Return null as we are not selecting the data
         }
       } catch (error) {
         console.error('Error sending message:', error);

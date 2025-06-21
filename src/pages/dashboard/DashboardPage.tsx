@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight, BarChart3, CheckCheck, RefreshCw } from 'lucide-react';
+import { Copy, MessageCircle, Share2, MessageSquare, Facebook, Instagram, ChevronLeft, ChevronRight, BarChart3, CheckCheck, RefreshCw, X } from 'lucide-react';
 import { useProfile } from '../../context/ProfileContext';
 import { useMessages } from '../../context/MessagesContext';
 import { MessageList } from '../../components/messages/MessageList';
@@ -128,67 +128,75 @@ export const DashboardPage: React.FC = () => {
                 Share your link to receive anonymous messages
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+            <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
               <button
                 onClick={() => setShowStats(!showStats)}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                className="flex items-center justify-center rounded-neo border-2 border-neoDark bg-white p-2 font-bold text-neoDark shadow-neo transition-all duration-200 hover:bg-neoAccent/40 dark:border-white dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40 sm:gap-2 sm:px-4 sm:py-2"
               >
                 <BarChart3 className="h-5 w-5" />
-                <span>Stats</span>
+                <span className="hidden sm:inline">Stats</span>
               </button>
               <button
                 onClick={copyLink}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
+                className="flex items-center justify-center rounded-neo border-2 border-neoDark bg-white p-2 font-bold text-neoDark shadow-neo transition-all duration-200 hover:bg-neoAccent/40 dark:border-white dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40 sm:gap-2 sm:px-4 sm:py-2"
               >
                 <Copy className="h-5 w-5" />
-                <span>Copy Link</span>
+                <span className="hidden sm:inline">Copy Link</span>
               </button>
               <div className="relative">
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="flex items-center gap-2 px-4 py-2 min-w-[44px] min-h-[44px] bg-white dark:bg-neoDark text-neoDark dark:text-white rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neoAccent"
+                  className="flex items-center justify-center rounded-neo border-2 border-neoDark bg-white p-2 font-bold text-neoDark shadow-neo transition-all duration-200 hover:bg-neoAccent/40 focus:outline-none focus:ring-2 focus:ring-neoAccent dark:border-white dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40 sm:gap-2 sm:px-4 sm:py-2"
                 >
                   <Share2 className="h-5 w-5" />
-                  <span>Share</span>
+                  <span className="hidden sm:inline">Share</span>
                 </button>
                 {showShareMenu && (
                   <>
                     {/* Backdrop for mobile, click to close */}
                     <div
-                      className="fixed inset-0 z-30 sm:hidden"
+                      className="fixed inset-0 z-30 bg-black/30 sm:hidden"
                       onClick={() => setShowShareMenu(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-[90vw] max-w-xs sm:w-48 bg-white dark:bg-neoDark rounded-neo shadow-neo-lg border-2 border-neoDark dark:border-white py-2 z-40">
-                      <button
-                        onClick={() => {
-                          shareToWhatsApp();
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
-                      >
-                        <MessageSquare className="h-5 w-5" />
-                        <span>WhatsApp</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          shareToFacebook();
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
-                      >
-                        <Facebook className="h-5 w-5" />
-                        <span>Facebook</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          shareToInstagram();
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-neoDark dark:text-white hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200 text-base sm:text-sm"
-                      >
-                        <Instagram className="h-5 w-5" />
-                        <span>Instagram</span>
-                      </button>
+                    <div className="fixed bottom-0 left-0 right-0 z-40 w-full rounded-t-neo border-t-4 border-neoDark bg-white p-4 shadow-neo-lg transition-transform duration-300 ease-in-out sm:absolute sm:right-0 sm:bottom-auto sm:left-auto sm:mt-2 sm:w-48 sm:rounded-neo sm:border-2 sm:border-t-2 sm:p-2 dark:border-white dark:bg-neoDark">
+                      <div className="mb-2 flex items-center justify-between sm:hidden">
+                        <h3 className="font-extrabold text-neoDark dark:text-white">Share link via</h3>
+                        <button onClick={() => setShowShareMenu(false)} className="rounded-neo border-2 border-neoDark p-1 shadow-neo transition-all hover:shadow-none dark:border-white">
+                          <X className="h-4 w-4 text-neoDark dark:text-white" />
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => {
+                            shareToWhatsApp();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 rounded-neo px-3 py-2 text-neoDark transition-all duration-200 hover:bg-neoAccent/40 dark:text-white dark:hover:bg-neoAccent2/40 sm:text-sm"
+                        >
+                          <MessageSquare className="h-5 w-5" />
+                          <span>WhatsApp</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            shareToFacebook();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 rounded-neo px-3 py-2 text-neoDark transition-all duration-200 hover:bg-neoAccent/40 dark:text-white dark:hover:bg-neoAccent2/40 sm:text-sm"
+                        >
+                          <Facebook className="h-5 w-5" />
+                          <span>Facebook</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            shareToInstagram();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full flex items-center gap-2 rounded-neo px-3 py-2 text-neoDark transition-all duration-200 hover:bg-neoAccent/40 dark:text-white dark:hover:bg-neoAccent2/40 sm:text-sm"
+                        >
+                          <Instagram className="h-5 w-5" />
+                          <span>Instagram</span>
+                        </button>
+                      </div>
                     </div>
                   </>
                 )}
@@ -238,17 +246,17 @@ export const DashboardPage: React.FC = () => {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="flex items-center gap-2 px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 bg-neoAccent2 text-white hover:bg-neoAccent3 hover:text-neoDark"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-neo border-2 border-neoDark bg-neoAccent2 p-2 font-bold text-white shadow-neo transition-all duration-200 hover:bg-neoAccent3 hover:text-neoDark dark:border-white sm:px-4 sm:py-2"
                   >
                     <CheckCheck className="h-5 w-5" />
-                    <span>Mark All Read</span>
+                    <span className="hidden sm:inline">Mark All Read</span>
                   </button>
                 )}
               </div>
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex w-full gap-2 sm:w-auto">
                 <button
                   onClick={() => setFilter('all')}
-                  className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
+                  className={`flex-1 rounded-neo border-2 border-neoDark px-4 py-2 font-bold shadow-neo transition-all duration-200 dark:border-white ${
                     filter === 'all'
                       ? 'bg-neoAccent text-neoDark dark:bg-neoAccent2 dark:text-white'
                       : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
@@ -258,7 +266,7 @@ export const DashboardPage: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setFilter('unread')}
-                  className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white shadow-neo font-bold transition-all duration-200 ${
+                  className={`flex-1 rounded-neo border-2 border-neoDark px-4 py-2 font-bold shadow-neo transition-all duration-200 dark:border-white ${
                     filter === 'unread'
                       ? 'bg-neoAccent2 text-white'
                       : 'bg-white text-neoDark hover:bg-neoAccent2/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'

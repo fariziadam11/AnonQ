@@ -7,7 +7,7 @@ export const HomePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-yellow-300 dark:bg-gray-900">
+      <div className="flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-12 w-12 border-8 border-black dark:border-white border-t-red-500"></div>
       </div>
     );
@@ -15,8 +15,8 @@ export const HomePage: React.FC = () => {
 
   if (user) {
     return (
-      <div className="flex flex-col min-h-screen bg-yellow-300 dark:bg-gray-900">
-        <div className="flex-1 py-8 px-2 sm:px-6 lg:px-8">
+      <div className="flex flex-col h-full">
+        <div className="flex-1 px-4 py-8 md:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-12">
               <h1 className="text-3xl sm:text-5xl font-black mb-6 transform -rotate-1 p-4 border-8 shadow-[8px_8px_0px_0px_#000] text-black dark:text-white bg-red-500 dark:bg-red-600 border-black dark:border-white">
@@ -72,8 +72,8 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-yellow-300 dark:bg-gray-900">
-      <div className="flex-1 py-8 px-2 sm:px-6 lg:px-8">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 px-4 py-8 md:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-3xl sm:text-6xl font-black mb-6 transform -rotate-2 p-4 sm:p-8 border-8 shadow-[12px_12px_0px_0px_#000] text-black dark:text-white bg-red-500 dark:bg-red-600 border-black dark:border-white">
