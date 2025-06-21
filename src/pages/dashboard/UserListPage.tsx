@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useProfile } from '../../context/ProfileContext';
 import { useMessages } from '../../context/MessagesContext';
-import { MessageCircle, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MessageCircle, Search, ArrowUpDown } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Spinner } from '../../components/common/Spinner';
+import { Pagination } from '../../components/common/Pagination';
 
 interface User {
   id: string;
@@ -46,7 +48,7 @@ const UserListPage: React.FC = () => {
   });
 
   // Filter and sort users
-  const filteredAndSortedUsers = useMemo(() => {
+  const filteredUsers = useMemo(() => {
     let result = [...users];
 
     // Filter by search query
@@ -77,13 +79,6 @@ const UserListPage: React.FC = () => {
 
     return result;
   }, [users, searchQuery, sortBy]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredAndSortedUsers.length / usersPerPage);
-  const paginatedUsers = filteredAndSortedUsers.slice(
-    (currentPage - 1) * usersPerPage,
-    currentPage * usersPerPage
-  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -117,14 +112,14 @@ const UserListPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading users...</p>
-        </div>
+      <div className="flex h-full items-center justify-center">
+        <Spinner message="Loading users..." />
       </div>
     );
   }
+
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -193,48 +188,13 @@ const UserListPage: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-8 p-4 bg-white dark:bg-neoDark rounded-neo border-2 border-neoDark dark:border-white">
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-sm text-neoDark/70 dark:text-white/70">
-            Showing {paginatedUsers.length} of {filteredAndSortedUsers.length} users
-          </p>
-          <p className="text-sm text-neoDark/70 dark:text-white/70">
-            Page {currentPage} of {totalPages}
-          </p>
-        </div>
-        
-        <div className="flex justify-center items-center gap-2">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-4 py-2 rounded-neo border-2 border-neoDark dark:border-white font-bold transition-all duration-200 ${
-                currentPage === page
-                  ? 'bg-neoAccent2 text-white dark:bg-neoAccent3 dark:text-neoDark'
-                  : 'bg-white text-neoDark hover:bg-neoAccent/40 dark:bg-neoDark dark:text-white dark:hover:bg-neoAccent2/40'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-neo border-2 border-neoDark dark:border-white bg-white dark:bg-neoDark text-neoDark dark:text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-neoAccent/40 dark:hover:bg-neoAccent2/40 transition-all duration-200"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        itemsCount={paginatedUsers.length}
+        totalItems={filteredUsers.length}
+      />
 
       {selectedUser && (
         <div className="mt-8 p-6 rounded-neo border-2 border-neoDark dark:border-white shadow-neo bg-white dark:bg-neoDark">

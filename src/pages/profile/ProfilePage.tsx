@@ -4,6 +4,7 @@ import { MessageCircle, User, ExternalLink } from 'lucide-react';
 import { useProfile } from '../../context/ProfileContext';
 import { MessageForm } from '../../components/messages/MessageForm';
 import { Database } from '../../lib/supabase';
+import { Spinner } from '../../components/common/Spinner';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -36,11 +37,8 @@ export const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
-        </div>
+      <div className="flex h-full items-center justify-center">
+        <Spinner message="Loading profile..." />
       </div>
     );
   }

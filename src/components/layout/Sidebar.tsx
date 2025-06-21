@@ -71,6 +71,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     }
   };
 
+  const handleCollapseToggle = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   const menuItems = user && profile ? [
     {
       to: "/",
@@ -123,14 +127,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       inactiveClass: "bg-white text-neoDark hover:bg-neoAccent/40",
     },
     {
-      to: "/demo",
-      label: "Sidebar Demo",
-      icon: Star,
-      active: location.pathname === "/demo",
-      activeClass: "bg-neoAccent2 text-white",
-      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
-    },
-    {
       to: "/login",
       label: "Login",
       icon: User,
@@ -145,6 +141,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       active: location.pathname === "/register",
       activeClass: "bg-neoAccent3 text-neoDark",
       inactiveClass: "bg-white text-neoDark hover:bg-neoAccent3/40",
+    },
+    {
+      to: "/sidebar-demo",
+      label: "Sidebar Demo",
+      icon: Star,
+      active: location.pathname === "/sidebar-demo",
+      activeClass: "bg-neoAccent2 text-white",
+      inactiveClass: "bg-white text-neoDark hover:bg-neoAccent2/40",
     },
   ];
 
@@ -165,7 +169,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
           fixed top-0 left-0 h-screen bg-white dark:bg-neoDark border-r-4 border-neoDark dark:border-white shadow-neo-lg z-50 sidebar-transition flex-shrink-0 flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           ${isCollapsed ? 'w-16' : 'w-64'}
-          md:sticky md:top-0 md:translate-x-0 md:z-auto
+          md:sticky md:translate-x-0
         `}
       >
         {/* Header */}
@@ -182,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
           
           {/* Collapse toggle button - only show on desktop */}
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={handleCollapseToggle}
             className="hidden md:flex items-center justify-center w-8 h-8 rounded-neo border-2 border-neoDark dark:border-white shadow-neo bg-white dark:bg-neoDark hover:bg-neoAccent/20 transition-colors duration-200"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >

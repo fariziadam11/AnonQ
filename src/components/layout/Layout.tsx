@@ -1,26 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { Outlet } from 'react-router-dom';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+export const Layout: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="relative flex min-h-screen">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
-      
-      {/* Main content */}
-      <div className="flex flex-1 flex-col bg-neoBg dark:bg-neoDark">
-        <Navbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="w-full flex-1">
-          {children}
+    <div className="flex min-h-screen bg-neoBg dark:bg-neoDark">
+      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <div className="flex flex-1 flex-col min-w-0">
+        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        <main className="flex-grow">
+          <Outlet />
         </main>
       </div>
     </div>
