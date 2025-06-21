@@ -3,20 +3,74 @@ import { useProfile } from '../../context/ProfileContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
+import { supabase } from '../../lib/supabase';
 
 export const ProfileSettingsPage: React.FC = () => {
-  const { profile, uploadProfileImage } = useProfile();
-  const { user, updatePassword, deleteUser, signOut } = useAuth();
+  const { profile, uploadProfileImage, deleteProfileImage } = useProfile();
+  const { user, updatePassword, signOut } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       return await uploadProfileImage(file);
+    },
+    onSuccess: () => toast.success('Profile image updated!'),
+    onError: (error: any) => toast.error(error.message || 'Failed to upload image'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteProfileImage,
+    onSuccess: () => {
+      toast.success('Profile image removed!');
+    },
+    onError: (error: any) => toast.error(error.message || 'Failed to remove image'),
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (password: string) => {
+      if (!user) throw new Error('No user to delete');
+      
+      // Verify password first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email!,
+        password: password
+      });
+      
+      if (signInError) {
+        throw new Error('Password is incorrect');
+      }
+      
+      // Delete avatar from storage if exists
+      if (profile?.avatar) {
+        const filePath = profile.avatar.split('/').pop();
+        if (filePath) {
+          await supabase.storage.from('avatars').remove([filePath]);
+        }
+      }
+      
+      // Call the database function to delete user account
+      const { error } = await supabase.rpc('delete_user_account', {
+        user_uuid: user.id
+      });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Account deleted successfully');
+      signOut();
+      navigate('/');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete account');
+      setDeleting(false);
     },
   });
 
@@ -57,10 +111,22 @@ export const ProfileSettingsPage: React.FC = () => {
         }}>
           <label className="block mb-2 font-black text-lg text-black">Upload Profile Image</label>
           <input type="file" name="image" accept="image/*" className="mb-2 w-full border-2 border-black rounded-lg px-3 py-2 bg-white font-bold" />
-          <button type="submit" className="w-full py-2 px-4 bg-green-400 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-green-500 transition-all duration-150" disabled={uploadMutation.isPending}>Upload</button>
+          <div className="flex gap-2">
+            <button type="submit" className="w-full py-2 px-4 bg-green-400 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-green-500 transition-all duration-150" disabled={uploadMutation.isPending}>
+              {uploadMutation.isPending ? 'Uploading...' : 'Upload'}
+            </button>
+            {profile.avatar && (
+              <button 
+                type="button" 
+                onClick={() => setIsConfirmModalOpen(true)}
+                className="w-full py-2 px-4 bg-red-400 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-red-500 transition-all duration-150" 
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete Photo'}
+              </button>
+            )}
+          </div>
           {uploadMutation.isPending && <div className="mt-2 text-base font-bold text-blue-600">Uploading...</div>}
-          {uploadMutation.isSuccess && <div className="mt-2 text-base font-black text-green-600">Image uploaded!</div>}
-          {uploadMutation.isError && <div className="mt-2 text-base font-black text-red-600">{(uploadMutation.error as any)?.message || 'Failed to upload image'}</div>}
         </form>
         {/* Update Password */}
         <form className="mb-8 border-4 border-black rounded-2xl p-4 bg-yellow-100 dark:bg-purple-200 shadow-[4px_4px_0px_0px_#000]" onSubmit={async e => {
@@ -92,25 +158,34 @@ export const ProfileSettingsPage: React.FC = () => {
           <button type="submit" className="w-full py-2 px-4 bg-blue-400 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-blue-500 transition-all duration-150">Update</button>
           {passwordMsg && <div className="mt-2 text-base font-black text-purple-700 dark:text-purple-900">{passwordMsg}</div>}
         </form>
-        {/* Delete User */}
-        <button
-          className="w-full py-2 px-4 bg-red-400 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-red-500 transition-all duration-150"
-          disabled={deleting}
-          onClick={async () => {
-            if (!window.confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
-            setDeleting(true);
-            try {
-              await deleteUser();
-              await signOut();
-              navigate('/');
-            } catch (err: any) {
-              alert(err.message || 'Failed to delete user');
-            } finally {
-              setDeleting(false);
-            }
-          }}
-        >Delete Account</button>
+        {/* Delete Account */}
+        <form className="border-4 border-black rounded-2xl p-4 bg-red-100 dark:bg-red-200 shadow-[4px_4px_0px_0px_#000]" onSubmit={async e => {
+          e.preventDefault();
+          const password = (e.target as any).password.value;
+          if (!password) {
+            toast.error('Please enter your password');
+            return;
+          }
+          setDeleting(true);
+          deleteAccountMutation.mutate(password);
+        }}>
+          <label className="block mb-2 font-black text-lg text-black">Delete Account</label>
+          <p className="mb-4 text-sm text-black/80">This action cannot be undone. All your data will be permanently deleted.</p>
+          <input type="password" name="password" placeholder="Enter your password" className="mb-4 w-full border-2 border-black rounded-lg px-3 py-2 bg-white font-bold" />
+          <button type="submit" className="w-full py-2 px-4 bg-red-500 border-2 border-black rounded-lg font-black text-lg shadow-[2px_2px_0px_0px_#000] hover:bg-red-600 transition-all duration-150" disabled={deleting}>
+            {deleting ? 'Deleting...' : 'Delete Account'}
+          </button>
+        </form>
       </div>
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => deleteMutation.mutate()}
+        title="Delete Profile Picture"
+        message="Are you sure you want to permanently delete your profile picture? This action cannot be undone."
+        confirmText="Delete"
+        isDestructive={true}
+      />
     </div>
   );
 };

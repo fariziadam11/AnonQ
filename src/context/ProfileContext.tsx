@@ -10,6 +10,7 @@ interface ProfileContextType {
   loading: boolean;
   getProfileByUsername: (username: string) => Promise<Profile | null>;
   uploadProfileImage: (file: File) => Promise<string | null>;
+  deleteProfileImage: () => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -74,6 +75,26 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return data.publicUrl;
   };
 
+  // Fungsi untuk menghapus gambar profil
+  const deleteProfileImage = async () => {
+    if (!user || !profile?.avatar) throw new Error('No profile picture to delete.');
+
+    // Ekstrak path file dari URL
+    const filePath = profile.avatar.split('/').pop();
+    if (!filePath) throw new Error('Could not determine file path.');
+    
+    // Hapus file dari Supabase Storage
+    const { error: removeError } = await supabase.storage.from('avatars').remove([filePath]);
+    if (removeError) throw removeError;
+    
+    // Set kolom avatar di profiles menjadi null
+    const { error: updateError } = await supabase.from('profiles').update({ avatar: null }).eq('user_id', user.id);
+    if (updateError) throw updateError;
+    
+    // Invalidate query untuk me-refresh data
+    await queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
+  };
+
   // Set up real-time subscription for profile updates
   React.useEffect(() => {
     if (!user) return;
@@ -104,6 +125,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loading: isLoading,
     getProfileByUsername,
     uploadProfileImage,
+    deleteProfileImage,
   };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

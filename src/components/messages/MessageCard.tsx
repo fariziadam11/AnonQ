@@ -50,7 +50,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
       const clone = cardElement.cloneNode(true) as HTMLElement;
       
       // Hide elements that shouldn't be in the image
-      const elementsToHide = clone.querySelectorAll('.hide-in-image');
+      const elementsToHide = clone.querySelectorAll('.hide-in-image, .action-buttons');
       elementsToHide.forEach(el => {
         if (el instanceof HTMLElement) {
           el.style.display = 'none';
@@ -59,9 +59,9 @@ export const MessageCard: React.FC<MessageCardProps> = ({
 
       // Add header to the clone
       const header = document.createElement('div');
-      header.style.padding = '16px';
-      header.style.borderBottom = '2px solid #000';
-      header.style.marginBottom = '16px';
+      header.style.padding = '24px';
+      header.style.borderBottom = '3px solid #000';
+      header.style.marginBottom = '24px';
       header.style.backgroundColor = '#fff';
       header.style.color = '#000';
       header.style.fontFamily = 'Arial, sans-serif';
@@ -69,51 +69,95 @@ export const MessageCard: React.FC<MessageCardProps> = ({
       const title = document.createElement('h2');
       title.textContent = 'Anonymous Message';
       title.style.margin = '0';
-      title.style.fontSize = '20px';
+      title.style.fontSize = '28px';
       title.style.fontWeight = 'bold';
       
       const timestamp = document.createElement('p');
       timestamp.textContent = new Date(message.created_at).toLocaleString();
-      timestamp.style.margin = '8px 0 0';
-      timestamp.style.fontSize = '14px';
+      timestamp.style.margin = '12px 0 0';
+      timestamp.style.fontSize = '16px';
       timestamp.style.color = '#666';
       
       header.appendChild(title);
       header.appendChild(timestamp);
       clone.insertBefore(header, clone.firstChild);
 
-      // Set background color for the clone
-      clone.style.backgroundColor = '#fff';
-      clone.style.padding = '16px';
-      clone.style.borderRadius = '8px';
-      clone.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-      clone.style.width = '600px';
-      clone.style.margin = '0 auto';
+      // Remove dark mode classes and ensure light styling
+      clone.classList.remove('dark');
+      clone.style.backgroundColor = '#ffffff';
+      clone.style.color = '#212529';
+      clone.querySelectorAll('*').forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.classList.remove('dark');
+        }
+      });
+      
+      // Style the message content area
+      const messageContent = clone.querySelector('.message-content-text') as HTMLElement;
+      if (messageContent) {
+        messageContent.style.backgroundColor = '#f8f9fa';
+        messageContent.style.padding = '20px';
+        messageContent.style.borderRadius = '8px';
+        messageContent.style.border = '2px solid #e9ecef';
+        messageContent.style.fontSize = '18px';
+        messageContent.style.lineHeight = '1.7';
+        messageContent.style.color = '#212529';
+      }
 
-      // Create a container for the clone
+      // Style the user icon and header
+      const userIcon = clone.querySelector('.user-icon-wrapper') as HTMLElement;
+      if (userIcon) {
+        userIcon.style.width = '48px';
+        userIcon.style.height = '48px';
+        userIcon.style.backgroundColor = '#007bff';
+        userIcon.style.borderRadius = '50%';
+        userIcon.style.display = 'flex';
+        userIcon.style.alignItems = 'center';
+        userIcon.style.justifyContent = 'center';
+        const iconSvg = userIcon.querySelector('svg');
+        if (iconSvg) {
+          iconSvg.style.color = '#ffffff';
+        }
+      }
+
+      const userText = clone.querySelector('.message-sender') as HTMLElement;
+      if (userText) {
+        userText.style.fontSize = '20px';
+        userText.style.color = '#212529';
+        userText.style.fontWeight = 'bold';
+      }
+
+      // Create a container for the clone, positioned off-screen
       const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.top = '-9999px';
+      container.style.left = '0px';
       container.style.backgroundColor = '#f5f5f5';
-      container.style.padding = '20px';
-      container.style.width = '640px';
+      container.style.padding = '32px';
+      container.style.width = '864px';
       container.style.height = 'auto';
+      container.style.minHeight = '400px';
       container.appendChild(clone);
 
       // Append container to body temporarily
       document.body.appendChild(container);
 
       const canvas = await html2canvas(container, {
-        scale: 2,
+        scale: 3,
         backgroundColor: '#f5f5f5',
         logging: false,
-        useCORS: true
+        useCORS: true,
+        width: 864,
+        height: container.scrollHeight,
+        foreignObjectRendering: true
       });
 
       // Remove the temporary container
       document.body.removeChild(container);
 
       const link = document.createElement('a');
-      link.download = `message-${message.id}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.download = `message-${message.id}-${new Date().getTime()}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     } catch (error) {
       console.error('Error downloading message:', error);
@@ -169,12 +213,12 @@ export const MessageCard: React.FC<MessageCardProps> = ({
           
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neoAccent2 dark:bg-neoAccent3 flex items-center justify-center flex-shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neoAccent2 dark:bg-neoAccent3 flex items-center justify-center flex-shrink-0 user-icon-wrapper">
                 <User className="h-5 w-5 text-white dark:text-neoDark" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1 sm:gap-2 mb-1">
-                  <span className="font-bold text-neoDark dark:text-white text-sm sm:text-base">
+                  <span className="font-bold text-neoDark dark:text-white text-sm sm:text-base message-sender">
                     {message.message_type === 'anonymous' ? 'Anonymous' : 'User-to-User'}
                   </span>
                 </div>
@@ -185,7 +229,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             </div>
             
             <div className="bg-neoBg dark:bg-neoDark/50 rounded-neo p-3 sm:p-4 border-2 border-neoDark/10 dark:border-white/10">
-              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words leading-relaxed text-sm sm:text-base">
+              <p className="text-neoDark dark:text-white whitespace-pre-wrap break-words leading-relaxed text-sm sm:text-base message-content-text">
                 {message.content}
               </p>
             </div>
@@ -195,7 +239,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                 <Clock className="h-4 w-4" />
                 <span>{new Date(message.created_at).toLocaleString()}</span>
               </div>
-              <div className="flex items-center gap-1 sm:gap-2 action-buttons">
+              <div className="flex items-center gap-1 sm:gap-2 action-buttons hide-in-image">
                 <button
                   onClick={() => setShowPreview(true)}
                   className="p-2 text-neoDark dark:text-white hover:text-neoAccent2 transition-colors duration-200 rounded-neo hover:bg-neoDark/5 dark:hover:bg-white/5"
