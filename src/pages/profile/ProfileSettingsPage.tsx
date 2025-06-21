@@ -166,7 +166,7 @@ export const ProfileSettingsPage: React.FC = () => {
             toast.error('Please enter your password');
             return;
           }
-          setDeleting(true);
+            setDeleting(true);
           deleteAccountMutation.mutate(password);
         }}>
           <label className="block mb-2 font-black text-lg text-black">Delete Account</label>

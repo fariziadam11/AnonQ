@@ -93,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     },
     {
       to: "/popular",
-      label: "Popular",
+      label: "Analytics",
       icon: TrendingUp,
       active: location.pathname === "/popular",
       activeClass: "bg-neoAccent3 text-neoDark",
