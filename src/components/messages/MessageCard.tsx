@@ -41,136 +41,267 @@ export const MessageCard: React.FC<MessageCardProps> = ({
     }
   };
 
+  // Main download function with fallback
   const handleDownload = async () => {
     try {
       const cardElement = document.getElementById(`message-card-${message.id}`);
-      if (!cardElement) return;
-
-      // Create a clone of the card element
-      const clone = cardElement.cloneNode(true) as HTMLElement;
-      
-      // Hide elements that shouldn't be in the image
-      const elementsToHide = clone.querySelectorAll('.hide-in-image, .action-buttons');
-      elementsToHide.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.display = 'none';
-        }
-      });
-
-      // Add header to the clone
-      const header = document.createElement('div');
-      header.style.padding = '24px';
-      header.style.borderBottom = '3px solid #000';
-      header.style.marginBottom = '24px';
-      header.style.backgroundColor = '#fff';
-      header.style.color = '#000';
-      header.style.fontFamily = 'Arial, sans-serif';
-      
-      const title = document.createElement('h2');
-      title.textContent = 'Anonymous Message';
-      title.style.margin = '0';
-      title.style.fontSize = '28px';
-      title.style.fontWeight = 'bold';
-      
-      const timestamp = document.createElement('p');
-      timestamp.textContent = new Date(message.created_at).toLocaleString();
-      timestamp.style.margin = '12px 0 0';
-      timestamp.style.fontSize = '16px';
-      timestamp.style.color = '#666';
-      
-      header.appendChild(title);
-      header.appendChild(timestamp);
-      clone.insertBefore(header, clone.firstChild);
-
-      // Remove dark mode classes and ensure light styling
-      clone.classList.remove('dark');
-      clone.style.backgroundColor = '#ffffff';
-      clone.style.color = '#212529';
-      clone.querySelectorAll('*').forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.classList.remove('dark');
-        }
-      });
-      
-      // Style the message content area
-      const messageContent = clone.querySelector('.message-content-text') as HTMLElement;
-      if (messageContent) {
-        messageContent.style.backgroundColor = '#f8f9fa';
-        messageContent.style.padding = '20px';
-        messageContent.style.borderRadius = '8px';
-        messageContent.style.border = '2px solid #e9ecef';
-        messageContent.style.fontSize = '18px';
-        messageContent.style.lineHeight = '1.7';
-        messageContent.style.color = '#212529';
+      if (!cardElement) {
+        toast.error('Message card not found');
+        return;
       }
 
-      // Style the user icon and header
-      const userIcon = clone.querySelector('.user-icon-wrapper') as HTMLElement;
-      if (userIcon) {
-        userIcon.style.width = '48px';
-        userIcon.style.height = '48px';
-        userIcon.style.backgroundColor = '#007bff';
-        userIcon.style.borderRadius = '50%';
-        userIcon.style.display = 'flex';
-        userIcon.style.alignItems = 'center';
-        userIcon.style.justifyContent = 'center';
-        const iconSvg = userIcon.querySelector('svg');
-        if (iconSvg) {
-          iconSvg.style.color = '#ffffff';
-        }
+      // Method 1: Capture original element (recommended)
+      await handleDownloadOriginal(cardElement);
+      
+    } catch (error) {
+      console.error('Primary download method failed:', error);
+      
+      // Fallback method using clone
+      try {
+        await handleDownloadWithClone();
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError);
+        toast.error('Failed to download message. Please try again.');
       }
+    }
+  };
 
-      const userText = clone.querySelector('.message-sender') as HTMLElement;
-      if (userText) {
-        userText.style.fontSize = '20px';
-        userText.style.color = '#212529';
-        userText.style.fontWeight = 'bold';
+  // Method 1: Capture original element
+  const handleDownloadOriginal = async (cardElement: HTMLElement) => {
+    // Hide elements that shouldn't be in the image
+    const elementsToHide = cardElement.querySelectorAll('.hide-in-image, .action-buttons, .checkbox-container');
+    const originalDisplayValues: string[] = [];
+    
+    elementsToHide.forEach((el, index) => {
+      if (el instanceof HTMLElement) {
+        originalDisplayValues[index] = el.style.display;
+        el.style.display = 'none';
       }
+    });
 
-      // Create a container for the clone, positioned off-screen but still rendered
-      const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.top = '0';
-      container.style.left = '0';
-      container.style.visibility = 'hidden';
-      container.style.backgroundColor = '#fff'; // putih
-      container.style.padding = '32px';
-      container.style.width = '864px';
-      container.style.height = 'auto';
-      container.style.minHeight = '400px';
-      container.appendChild(clone);
+    // Add loading state
+    toast.loading('Generating image...');
 
-      // Append container to body temporarily
-      document.body.appendChild(container);
+    try {
+      // Wait for any pending renders
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Ganti html2canvas dengan html-to-image
-      const dataUrl = await htmlToImage.toPng(container, {
-        backgroundColor: '#fff',
+      const dataUrl = await htmlToImage.toPng(cardElement, {
+        backgroundColor: '#ffffff',
         cacheBust: true,
-        width: 864,
-        height: container.scrollHeight,
-        style: {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          visibility: 'hidden',
-          backgroundColor: '#fff',
-          padding: '32px',
-          width: '864px',
-          minHeight: '400px',
-        },
+        pixelRatio: 2,
+        quality: 1,
+        width: cardElement.offsetWidth,
+        height: cardElement.offsetHeight,
       });
 
-      // Remove the temporary container
-      document.body.removeChild(container);
+      // Check if dataUrl is valid
+      if (!dataUrl || dataUrl === 'data:,' || dataUrl.length < 100) {
+        throw new Error('Generated image is empty or invalid');
+      }
+
+      // Download the image
+      const link = document.createElement('a');
+      link.download = `message-${message.id}-${new Date().getTime()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.dismiss();
+      toast.success('Image downloaded successfully!');
+
+    } finally {
+      // Always restore original display values
+      elementsToHide.forEach((el, index) => {
+        if (el instanceof HTMLElement) {
+          el.style.display = originalDisplayValues[index] || '';
+        }
+      });
+      toast.dismiss();
+    }
+  };
+
+  // Method 2: Fallback with clone (improved to match desired output)
+  const handleDownloadWithClone = async () => {
+    const cardElement = document.getElementById(`message-card-${message.id}`);
+    if (!cardElement) return;
+
+    toast.loading('Trying alternative method...');
+
+    // Create main container exactly like the desired output
+    const container = document.createElement('div');
+    container.style.cssText = `
+      position: absolute;
+      top: -9999px;
+      left: 0;
+      width: 800px;
+      background-color: #ffffff;
+      padding: 40px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      border: 6px solid #000000;
+      border-radius: 20px;
+      box-sizing: border-box;
+    `;
+
+    // Header section
+    const header = document.createElement('div');
+    header.style.cssText = `
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #000000;
+    `;
+    
+    const title = document.createElement('h1');
+    title.textContent = 'Anonymous Message';
+    title.style.cssText = `
+      margin: 0 0 12px 0;
+      font-size: 36px;
+      font-weight: bold;
+      color: #000000;
+      line-height: 1.2;
+    `;
+    
+    const timestamp = document.createElement('p');
+    timestamp.textContent = new Date(message.created_at).toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    timestamp.style.cssText = `
+      margin: 0;
+      font-size: 18px;
+      color: #666666;
+      font-weight: normal;
+    `;
+    
+    header.appendChild(title);
+    header.appendChild(timestamp);
+
+    // Message content section
+    const messageSection = document.createElement('div');
+    messageSection.style.cssText = `
+      margin-bottom: 0;
+    `;
+
+    // User info with icon
+    const userInfo = document.createElement('div');
+    userInfo.style.cssText = `
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+    `;
+
+    // User icon (red circle)
+    const userIcon = document.createElement('div');
+    userIcon.style.cssText = `
+      width: 50px;
+      height: 50px;
+      background-color: #ff6b6b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    `;
+
+    // User icon SVG
+    const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    iconSvg.setAttribute('width', '24');
+    iconSvg.setAttribute('height', '24');
+    iconSvg.setAttribute('viewBox', '0 0 24 24');
+    iconSvg.setAttribute('fill', 'white');
+    
+    const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    iconPath.setAttribute('d', 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2');
+    iconPath.setAttribute('stroke', 'white');
+    iconPath.setAttribute('stroke-width', '2');
+    iconPath.setAttribute('fill', 'none');
+    
+    const iconCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    iconCircle.setAttribute('cx', '12');
+    iconCircle.setAttribute('cy', '7');
+    iconCircle.setAttribute('r', '4');
+    iconCircle.setAttribute('stroke', 'white');
+    iconCircle.setAttribute('stroke-width', '2');
+    iconCircle.setAttribute('fill', 'none');
+    
+    iconSvg.appendChild(iconCircle);
+    iconSvg.appendChild(iconPath);
+    userIcon.appendChild(iconSvg);
+
+    // User label
+    const userLabel = document.createElement('span');
+    userLabel.textContent = message.message_type === 'anonymous' ? 'Anonymous' : 'User-to-User';
+    userLabel.style.cssText = `
+      font-size: 24px;
+      font-weight: bold;
+      color: #000000;
+    `;
+
+    userInfo.appendChild(userIcon);
+    userInfo.appendChild(userLabel);
+
+    // Message content box
+    const messageBox = document.createElement('div');
+    messageBox.style.cssText = `
+      background-color: #f0f0f0;
+      border: 2px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 24px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #000000;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 60px;
+    `;
+    messageBox.textContent = message.content;
+
+    // Assemble everything
+    messageSection.appendChild(userInfo);
+    messageSection.appendChild(messageBox);
+    
+    container.appendChild(header);
+    container.appendChild(messageSection);
+    document.body.appendChild(container);
+
+    try {
+      // Wait for render
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const dataUrl = await htmlToImage.toPng(container, {
+        backgroundColor: '#ffffff',
+        cacheBust: true,
+        pixelRatio: 2,
+        width: 800,
+        height: container.scrollHeight + 80, // Add some padding
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+        }
+      });
+
+      if (!dataUrl || dataUrl === 'data:,' || dataUrl.length < 100) {
+        throw new Error('Clone method also produced empty image');
+      }
 
       const link = document.createElement('a');
       link.download = `message-${message.id}-${new Date().getTime()}.png`;
       link.href = dataUrl;
       link.click();
-    } catch (error) {
-      console.error('Error downloading message:', error);
-      toast.error('Failed to download message');
+
+      toast.dismiss();
+      toast.success('Image downloaded successfully!');
+
+    } finally {
+      document.body.removeChild(container);
+      toast.dismiss();
     }
   };
 
