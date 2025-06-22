@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Clock, CheckCheck, Trash2, CheckSquare, Square, Download, Eye, X, User } from 'lucide-react';
 import { Database } from '../../lib/supabase';
 import { useMessages } from '../../context/MessagesContext';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 import { toast } from 'react-hot-toast';
 
 type Message = Database['public']['Tables']['messages']['Row'];
@@ -127,12 +127,13 @@ export const MessageCard: React.FC<MessageCardProps> = ({
         userText.style.fontWeight = 'bold';
       }
 
-      // Create a container for the clone, positioned off-screen
+      // Create a container for the clone, positioned off-screen but still rendered
       const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.top = '-9999px';
-      container.style.left = '0px';
-      container.style.backgroundColor = '#f5f5f5';
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.visibility = 'hidden';
+      container.style.backgroundColor = '#fff'; // putih
       container.style.padding = '32px';
       container.style.width = '864px';
       container.style.height = 'auto';
@@ -142,14 +143,22 @@ export const MessageCard: React.FC<MessageCardProps> = ({
       // Append container to body temporarily
       document.body.appendChild(container);
 
-      const canvas = await html2canvas(container, {
-        scale: 3,
-        backgroundColor: '#f5f5f5',
-        logging: false,
-        useCORS: true,
+      // Ganti html2canvas dengan html-to-image
+      const dataUrl = await htmlToImage.toPng(container, {
+        backgroundColor: '#fff',
+        cacheBust: true,
         width: 864,
         height: container.scrollHeight,
-        foreignObjectRendering: true
+        style: {
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          visibility: 'hidden',
+          backgroundColor: '#fff',
+          padding: '32px',
+          width: '864px',
+          minHeight: '400px',
+        },
       });
 
       // Remove the temporary container
@@ -157,7 +166,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
 
       const link = document.createElement('a');
       link.download = `message-${message.id}-${new Date().getTime()}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
+      link.href = dataUrl;
       link.click();
     } catch (error) {
       console.error('Error downloading message:', error);
