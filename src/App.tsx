@@ -57,7 +57,7 @@ const App: React.FC = () => (
       <ProfileProvider>
         <MessagesProvider>
           <AppContent />
-          <ReactQueryDevtools/>
+          <ReactQueryDevtools initialIsOpen={false} />
         </MessagesProvider>
       </ProfileProvider>
     </AuthProvider>
