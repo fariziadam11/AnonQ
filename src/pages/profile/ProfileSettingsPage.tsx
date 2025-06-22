@@ -19,6 +19,7 @@ export const ProfileSettingsPage: React.FC = () => {
   const navigate = useNavigate();
 
   const uploadMutation = useMutation({
+    mutationKey: ['profile-upload-image'],
     mutationFn: async (file: File) => {
       return await uploadProfileImage(file);
     },
@@ -27,6 +28,7 @@ export const ProfileSettingsPage: React.FC = () => {
   });
 
   const deleteMutation = useMutation({
+    mutationKey: ['profile-delete-image'],
     mutationFn: deleteProfileImage,
     onSuccess: () => {
       toast.success('Profile image removed!');
@@ -35,6 +37,7 @@ export const ProfileSettingsPage: React.FC = () => {
   });
 
   const deleteAccountMutation = useMutation({
+    mutationKey: ['profile-delete-account'],
     mutationFn: async (password: string) => {
       if (!user) throw new Error('No user to delete');
       

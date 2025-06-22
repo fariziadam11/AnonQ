@@ -66,6 +66,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Mark as read mutation
   const markAsReadMutation = useMutation({
+    mutationKey: ['messages-mark-as-read'],
     mutationFn: async (messageId: string) => {
       const { error } = await supabase
         .from('messages')
@@ -86,6 +87,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Send message mutation
   const sendMessageMutation = useMutation({
+    mutationKey: ['messages-send'],
     mutationFn: async ({ profileId, content, messageType }: { profileId: string; content: string; messageType?: 'anonymous' | 'user_to_user' }) => {
       try {
         if (messageType === 'user_to_user') {
@@ -154,6 +156,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   // Delete message mutation
   const deleteMessageMutation = useMutation({
+    mutationKey: ['messages-delete'],
     mutationFn: async (messageId: string) => {
       if (!profile) throw new Error('No profile found');
 
@@ -176,6 +179,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Delete messages mutation
   const deleteMessagesMutation = useMutation({
+    mutationKey: ['messages-delete-multiple'],
     mutationFn: async (messageIds: string[]) => {
       if (!profile) throw new Error('No profile found');
 
