@@ -11,6 +11,7 @@ import GuestRoute from './components/auth/GuestRoute';
 import { SidebarDemoPage } from './pages/SidebarDemoPage';
 import { useAuth } from './context/AuthContext';
 import { Spinner } from './components/common/Spinner';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // Import pages with correct export types
 import { HomePage } from './pages/HomePage';
@@ -84,6 +85,7 @@ const App: React.FC = () => (
       <ProfileProvider>
         <MessagesProvider>
           <AppContent />
+          <ReactQueryDevtools initialIsOpen={false} />
         </MessagesProvider>
       </ProfileProvider>
     </AuthProvider>

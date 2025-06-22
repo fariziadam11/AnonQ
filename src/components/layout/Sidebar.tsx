@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import { useMessages } from '../../context/MessagesContext';
+import { useToast } from '../../context/ToastContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const [isDark, setIsDark] = useState(() =>
     typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : false
   );
+  const { showToast } = useToast();
 
   // Close sidebar on mobile when clicking outside
   useEffect(() => {
@@ -66,7 +68,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const handleSignOut = async () => {
     try {
       await signOut();
+      showToast('You have been logged out.', 'success');
     } catch (error) {
+      showToast('Error signing out', 'error');
       console.error('Error signing out:', error);
     }
   };

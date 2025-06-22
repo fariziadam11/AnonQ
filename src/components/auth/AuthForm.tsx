@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import toast from 'react-hot-toast';
+import { useToast } from '../../context/ToastContext';
 import { validateUsername } from '../../lib/supabase';
 
 interface AuthFormProps {
@@ -20,6 +20,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
   });
 
   const { signIn, signUp } = useAuth();
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,36 +29,36 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
     try {
       if (isLogin) {
         await signIn(formData.email, formData.password);
-        toast.success('Welcome back!');
+        showToast('Welcome back!', 'success');
       } else {
         if (!formData.username.trim()) {
-          toast.error('Username is required');
+          showToast('Username is required', 'error');
           return;
         }
         
         // Check if username contains only valid characters
         if (!/^[a-zA-Z0-9_-]+$/.test(formData.username)) {
-          toast.error('Username can only contain letters, numbers, hyphens, and underscores');
+          showToast('Username can only contain letters, numbers, hyphens, and underscores', 'error');
           return;
         }
 
         // Backend validation (Supabase RPC)
         const isValid = await validateUsername(formData.username);
         if (!isValid) {
-          toast.error('Username is not valid (must be 3-50 chars, only a-z, A-Z, 0-9, _ )');
+          showToast('Username is not valid (must be 3-50 chars, only a-z, A-Z, 0-9, _ )', 'error');
           return;
         }
 
         await signUp(formData.email, formData.password, formData.username);
         await signIn(formData.email, formData.password);
-        toast.success('Account created successfully!');
+        showToast('Account created successfully!', 'success');
         localStorage.setItem('pending_username', formData.username);
         onSuccess?.();
         return;
       }
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
+      showToast(error.message || 'An error occurred', 'error');
     } finally {
       setLoading(false);
     }
