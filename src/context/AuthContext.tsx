@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, _username: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -48,7 +48,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     });
     if (error) throw error;
-    // Do NOT insert profile here. Wait until after login.
+    // Setelah sign up berhasil, langsung insert ke profiles
+    const user = data.user;
+    if (user) {
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({ user_id: user.id, username });
+      if (insertError) throw insertError;
+    }
     return data;
   };
 

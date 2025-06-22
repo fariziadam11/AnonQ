@@ -53,7 +53,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, mode }) => {
         await signUp(formData.email, formData.password, formData.username);
         toast.success('Account created successfully!');
         localStorage.setItem('pending_username', formData.username);
-        navigate('/verify-email');
+        onSuccess?.();
         return;
       }
       onSuccess?.();

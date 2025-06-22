@@ -18,7 +18,6 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import EmailVerificationPage from './pages/auth/EmailVerificationPage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
 import UserListPage from './pages/dashboard/UserListPage';
 import PopularProfilesPage from './pages/dashboard/PopularProfilesPage';
@@ -41,7 +40,6 @@ const AppContent: React.FC = () => {
               <Route path="login" element={<GuestRoute><LoginPage /></GuestRoute>} />
               <Route path="register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
               <Route path="forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
-              <Route path="verify-email" element={<GuestRoute><EmailVerificationPage /></GuestRoute>} />
               <Route path="u/:username" element={<ProfilePage />} />
               <Route path="dashboard" element={<ProtectedRoute allowedRoles={['user', 'admin']}><DashboardPage /></ProtectedRoute>} />
               <Route path="users" element={<ProtectedRoute allowedRoles={['admin']}><UserListPage /></ProtectedRoute>} />
